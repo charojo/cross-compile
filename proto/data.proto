@@ -10,3 +10,13 @@ message UpdateUserResponse {
   bool success = 1;
   string message = 2;
 }
+
+message SensorReading {
+  int32 sensor_id = 1;
+  double value = 2;
+  int64 timestamp = 3;
+}
+
+message ControlCommand {
+  uint64 new_rate = 1;
+}
