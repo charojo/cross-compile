@@ -19,9 +19,15 @@ def load_worker_with_mocked_zmq():
     poller.poll.return_value = [(sub_socket, zmq_mock.POLLIN)]
     zmq_mock.Poller.return_value = poller
 
+    original_zmq = sys.modules.get("zmq")
     sys.modules["zmq"] = zmq_mock
 
     from python_worker import worker
+
+    if original_zmq is not None:
+        sys.modules["zmq"] = original_zmq
+    else:  # pragma: no cover - no existing zmq module
+        del sys.modules["zmq"]
 
     return worker, poller, sub_socket, req_socket
 
@@ -29,16 +35,20 @@ def load_worker_with_mocked_zmq():
 def test_process_parses_event_and_sends_request():
     worker, poller, sub_socket, req_socket = load_worker_with_mocked_zmq()
     event = data_pb2.UpdateUserEvent(user_id=7, field="name", value="Bob")
-    sub_socket.recv.return_value = event.SerializeToString()
+    sub_socket.recv_multipart.return_value = [
+        b"UpdateUserEvent",
+        event.SerializeToString(),
+    ]
 
     result = worker.process(poller, sub_socket, req_socket)
 
     assert result.user_id == 7
     assert result.field == "name"
-    req_socket.send.assert_called_once()
-    sent = req_socket.send.call_args[0][0]
+    req_socket.send_multipart.assert_called_once()
+    sent = req_socket.send_multipart.call_args[0][0]
+    assert sent[0] == b"GetUserRequest"
     req = data_pb2.GetUserRequest()
-    req.ParseFromString(sent)
+    req.ParseFromString(sent[1])
     assert req.user_id == 7
     assert req.field == "name"
 
@@ -68,8 +78,11 @@ def test_sensor_reading_pub_sub_roundtrip():
 def test_main_emits_startup_message(capsys):
     worker, poller, sub_socket, req_socket = load_worker_with_mocked_zmq()
     with (
-        patch("worker.setup", return_value=(poller, sub_socket, req_socket)),
-        patch("worker.process", side_effect=SystemExit),
+        patch(
+            "python_worker.worker.setup",
+            return_value=(poller, sub_socket, req_socket),
+        ),
+        patch("python_worker.worker.process", side_effect=SystemExit),
     ):
         try:
             worker.main()
