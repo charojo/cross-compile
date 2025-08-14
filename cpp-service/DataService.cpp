@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <string>
 #include <zmq.hpp>
@@ -71,5 +72,6 @@ int main() {
             rep.send(zmq::buffer(respStr));
         }
     }
-    return 0;
+
+  return 0;
 }
