@@ -6,6 +6,7 @@ from unittest.mock import MagicMock
 sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 from proto import data_pb2
 
+
 def load_worker_with_mocked_zmq():
     zmq_mock = MagicMock()
     sub_socket = MagicMock()
@@ -21,10 +22,11 @@ def load_worker_with_mocked_zmq():
     poller.poll.return_value = [(sub_socket, zmq_mock.POLLIN)]
     zmq_mock.Poller.return_value = poller
 
-    sys.modules['zmq'] = zmq_mock
+    sys.modules["zmq"] = zmq_mock
 
     sys.path.append(str(pathlib.Path(__file__).resolve().parents[1] / "python-worker"))
     import worker  # noqa: E402  (import after sys.path manipulation)
+
     return worker, poller, sub_socket, req_socket
 
 
@@ -41,3 +43,20 @@ def test_process_parses_event_and_sends_request():
     req = data_pb2.GetUserRequest()
     req.ParseFromString(sent)
     assert req.user_id == 7
+
+
+def test_sensor_reading_pub_sub_roundtrip():
+    import time
+    import zmq
+
+    sys.path.append(str(pathlib.Path(__file__).resolve().parents[1] / "python-worker"))
+    import worker  # noqa: E402  (import after sys.path manipulation)
+
+    ctx = zmq.Context()
+    pub_socket, sub_socket = worker.setup_sensor_pubsub(ctx, "inproc://sensor-test")
+    reading = data_pb2.SensorReading(sensor_id=7, value=1.23, timestamp=99)
+
+    time.sleep(0.05)
+    worker.send_sensor_reading(pub_socket, reading)
+    received = worker.recv_sensor_reading(sub_socket)
+    assert received == reading
