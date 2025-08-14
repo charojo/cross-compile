@@ -1,5 +1,9 @@
 syntax = "proto3";
 
+message GetUserRequest {
+  int32 user_id = 1;
+}
+
 message UpdateUserRequest {
   int32 user_id = 1;
   string field = 2;
@@ -9,4 +13,10 @@ message UpdateUserRequest {
 message UpdateUserResponse {
   bool success = 1;
   string message = 2;
+}
+
+message UpdateUserEvent {
+  int32 user_id = 1;
+  string field = 2;
+  string value = 3;
 }
