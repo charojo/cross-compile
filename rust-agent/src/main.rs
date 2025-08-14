@@ -1,33 +1,96 @@
+use std::sync::{
+    Arc,
+    atomic::{AtomicBool, AtomicU64, Ordering},
+};
+use std::thread;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
+
 use prost::Message;
-use std::time::{SystemTime, UNIX_EPOCH};
 
 mod proto {
     include!(concat!(env!("OUT_DIR"), "/data.rs"));
 }
 
-fn main() {
-    // Set up a ZeroMQ publisher.
+use proto::{ControlCommand, SensorReading};
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    env_logger::init();
+
+    // Set up ZeroMQ publisher and subscriber.
     let ctx = zmq::Context::new();
-    let publisher = ctx.socket(zmq::PUB).expect("create pub socket");
-    publisher.bind("tcp://*:5555").expect("bind pub socket");
+    let publisher = ctx.socket(zmq::PUB)?;
+    publisher.bind("tcp://*:5555")?;
 
-    // Construct a mock sensor reading.
-    let ts = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("time went backwards")
-        .as_secs() as i64;
-    let reading = proto::SensorReading {
-        sensor_id: 1,
-        value: 42.0,
-        timestamp: ts,
-    };
+    let subscriber = ctx.socket(zmq::SUB)?;
+    subscriber.connect("tcp://localhost:5556")?;
+    subscriber.set_subscribe(b"")?;
 
-    // Encode and publish the message.
-    let mut buf = Vec::new();
-    reading.encode(&mut buf).expect("encode message");
-    publisher.send(buf, 0).expect("send message");
+    // Shared state for publish rate and shutdown signal.
+    let rate = Arc::new(AtomicU64::new(1));
+    let running = Arc::new(AtomicBool::new(true));
 
-    println!("Published mock SensorReading");
+    // CTRL-C handler for clean shutdown.
+    {
+        let running = running.clone();
+        ctrlc::set_handler(move || {
+            running.store(false, Ordering::SeqCst);
+        })?;
+    }
+
+    // Thread to receive control commands.
+    {
+        let rate = rate.clone();
+        let running = running.clone();
+        thread::spawn(move || {
+            while running.load(Ordering::SeqCst) {
+                match subscriber.recv_bytes(zmq::DONTWAIT) {
+                    Ok(bytes) => match ControlCommand::decode(&*bytes) {
+                        Ok(cmd) => {
+                            if cmd.new_rate > 0 {
+                                rate.store(cmd.new_rate, Ordering::SeqCst);
+                                log::info!("Updated rate to {}s", cmd.new_rate);
+                            }
+                        }
+                        Err(e) => log::error!("Decode ControlCommand: {e}"),
+                    },
+                    Err(e) => {
+                        if e == zmq::Error::EAGAIN {
+                            thread::sleep(Duration::from_millis(100));
+                        } else {
+                            log::error!("Receive ControlCommand: {e}");
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Publishing loop.
+    while running.load(Ordering::SeqCst) {
+        let ts = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs() as i64;
+
+        let reading = SensorReading {
+            sensor_id: 1,
+            value: 42.0,
+            timestamp: ts,
+        };
+
+        let mut buf = Vec::new();
+        if let Err(e) = reading.encode(&mut buf) {
+            log::error!("Encode SensorReading: {e}");
+            continue;
+        }
+        if let Err(e) = publisher.send(buf, 0) {
+            log::error!("Publish SensorReading: {e}");
+        }
+
+        let delay = rate.load(Ordering::SeqCst);
+        thread::sleep(Duration::from_secs(delay));
+    }
+
+    log::info!("Shutting down");
+    Ok(())
 }
 
 #[cfg(test)]
