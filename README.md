@@ -74,6 +74,8 @@ The repository is structured to showcase **modular starter examples** in C++, Py
 └── docs/                 # Additional documentation (including this design report)
 ```
 
+For common utilities and protos, see [shared/](shared/README.md).
+
 ### C++ Data Service (`cpp-service/`)
 
 **Role:** The C++ service acts as the **Data Service** – a central authority for storing and distributing data. It hosts a ZeroMQ **REP** socket to handle incoming requests (e.g. update or query data) and a **PUB** socket to broadcast change notifications. It uses the SQLite C++ API (e.g. `sqlite3_exec`) to persist updates to an on-disk database, while maintaining an in-memory cache (e.g. an `std::unordered_map` or similar) for fast reads.
