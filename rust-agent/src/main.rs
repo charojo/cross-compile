@@ -38,7 +38,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     // Thread to receive control commands.
-    {
+    let sub_handle = {
         let rate = rate.clone();
         let running = running.clone();
         thread::spawn(move || {
@@ -63,8 +63,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
                 }
             }
-        });
-    }
+            if let Err(e) = subscriber.close() {
+                log::error!("Close subscriber: {e}");
+            }
+        })
+    };
 
     // Publishing loop.
     while running.load(Ordering::SeqCst) {
@@ -90,6 +93,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     log::info!("Shutting down");
+    if let Err(e) = publisher.close() {
+        log::error!("Close publisher: {e}");
+    }
+    if let Err(e) = sub_handle.join() {
+        log::error!("Join control thread: {e:?}");
+    }
     Ok(())
 }
 
