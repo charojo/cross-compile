@@ -1,9 +1,7 @@
 import ctypes
 import pathlib
 import sqlite3
-import sys
 
-sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 from proto import data_pb2
 
 LIB_PATH = (

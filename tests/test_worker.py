@@ -1,9 +1,6 @@
 import sys
-from pathlib import Path
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.extend([str(ROOT), str(ROOT / "python-worker")])
 from proto import data_pb2
 
 
@@ -24,7 +21,7 @@ def load_worker_with_mocked_zmq():
 
     sys.modules["zmq"] = zmq_mock
 
-    import worker  # noqa: E402  (import after sys.modules modification)
+    from python_worker import worker
 
     return worker, poller, sub_socket, req_socket
 
@@ -48,7 +45,7 @@ def test_sensor_reading_pub_sub_roundtrip():
     import time
     import zmq
 
-    import worker  # noqa: E402  (import after sys.path modification)
+    from python_worker import worker
 
     ctx = zmq.Context()
     pub_socket, sub_socket = worker.setup_sensor_pubsub(ctx, "inproc://sensor-test")
