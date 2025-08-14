@@ -2,6 +2,7 @@
 #include "Database.h"
 
 #include <atomic>
+#include <cerrno>
 #include <csignal>
 #include <cstdint>
 #include <iostream>
@@ -208,23 +209,49 @@ int main() {
 
   void *ctx = zmq_ctx_new();
   void *rep = zmq_socket(ctx, ZMQ_REP);
-  zmq_bind(rep, "tcp://127.0.0.1:5555");
+  if (zmq_bind(rep, "tcp://127.0.0.1:5555") != 0) {
+    std::cerr << "Failed to bind REP socket: " << zmq_strerror(zmq_errno())
+              << std::endl;
+    zmq_close(rep);
+    zmq_ctx_term(ctx);
+    return 1;
+  }
   void *pub = zmq_socket(ctx, ZMQ_PUB);
-  zmq_bind(pub, "tcp://127.0.0.1:5556");
+  if (zmq_bind(pub, "tcp://127.0.0.1:5556") != 0) {
+    std::cerr << "Failed to bind PUB socket: " << zmq_strerror(zmq_errno())
+              << std::endl;
+    zmq_close(rep);
+    zmq_close(pub);
+    zmq_ctx_term(ctx);
+    return 1;
+  }
 
   zmq_pollitem_t items[] = {{rep, 0, ZMQ_POLLIN, 0}};
   while (running) {
-    zmq_poll(items, 1, 100);
+    int rc = zmq_poll(items, 1, 100);
+    if (rc == -1) {
+      if (zmq_errno() == EINTR) {
+        continue;
+      }
+      std::cerr << "zmq_poll failed: " << zmq_strerror(zmq_errno())
+                << std::endl;
+      break;
+    }
     if (items[0].revents & ZMQ_POLLIN) {
       zmq_msg_t type_msg;
       zmq_msg_t payload_msg;
       zmq_msg_init(&type_msg);
       zmq_msg_init(&payload_msg);
       if (zmq_msg_recv(&type_msg, rep, 0) == -1) {
+        std::cerr << "failed to receive type frame" << std::endl;
+        zmq_msg_close(&type_msg);
+        zmq_msg_close(&payload_msg);
         continue;
       }
       if (zmq_msg_recv(&payload_msg, rep, 0) == -1) {
+        std::cerr << "failed to receive payload frame" << std::endl;
         zmq_msg_close(&type_msg);
+        zmq_msg_close(&payload_msg);
         continue;
       }
       std::string mtype(static_cast<char *>(zmq_msg_data(&type_msg)),
@@ -234,6 +261,7 @@ int main() {
       zmq_msg_close(&type_msg);
       zmq_msg_close(&payload_msg);
 
+      std::cout << "Received " << mtype << std::endl;
       if (mtype == "UpdateUserRequest") {
         UpdateUserRequest req;
         if (req.Parse(payload.data(), static_cast<int>(payload.size()))) {
@@ -251,6 +279,7 @@ int main() {
                       << req.field << std::endl;
           }
         } else {
+          std::cerr << "failed to parse UpdateUserRequest" << std::endl;
           auto resp = make_update_user_response(false, "invalid");
           zmq_send(rep, "UpdateUserResponse", 17, ZMQ_SNDMORE);
           zmq_send(rep, resp.data(), resp.size(), 0);
@@ -266,11 +295,13 @@ int main() {
           std::cout << "Get user " << req.user_id << " field " << req.field
                     << std::endl;
         } else {
+          std::cerr << "failed to parse GetUserRequest" << std::endl;
           auto resp = make_get_user_response(false, "");
           zmq_send(rep, "GetUserResponse", 15, ZMQ_SNDMORE);
           zmq_send(rep, resp.data(), resp.size(), 0);
         }
       } else {
+        std::cerr << "unknown message type: " << mtype << std::endl;
         zmq_send(rep, "", 0, 0);
       }
     }

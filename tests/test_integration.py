@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import contextlib
+import subprocess
 import threading
 import time
 import pathlib
@@ -13,6 +15,7 @@ from proto import data_pb2
 from python_worker import worker
 
 
+@contextlib.contextmanager
 def _launch_service() -> subprocess.Popen[bytes]:
     """Build and launch the ARM data service under QEMU."""
 
@@ -26,14 +29,20 @@ def _launch_service() -> subprocess.Popen[bytes]:
     )
     # Give the service time to bind to its sockets
     time.sleep(0.5)
-    return proc
+    try:
+        yield proc
+    finally:
+        proc.terminate()
+        try:
+            proc.wait(timeout=5)
+        except subprocess.TimeoutExpired:  # pragma: no cover - best effort
+            proc.kill()
 
 
 def test_end_to_end_message_flow() -> None:
     """Ensure that an update flows through the service and worker."""
 
-    proc = _launch_service()
-    try:
+    with _launch_service():
         poller, sub_socket, req_socket = worker.setup()
         time.sleep(0.2)
 
@@ -65,9 +74,3 @@ def test_end_to_end_message_flow() -> None:
         ctx.term()
         sub_socket.close(0)
         req_socket.close(0)
-    finally:
-        proc.terminate()
-        try:
-            proc.wait(timeout=5)
-        except subprocess.TimeoutExpired:  # pragma: no cover - best effort
-            proc.kill()
