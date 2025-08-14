@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+message UpdateUserRequest {
+  int32 user_id = 1;
+  string field = 2;
+  string value = 3;
+}
+
+message UpdateUserResponse {
+  bool success = 1;
+  string message = 2;
+}
