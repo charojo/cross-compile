@@ -2,28 +2,16 @@
 This document summarizes the latest `make test` run for each merged feature. Include the abbreviated commit ID and a link to the relevant pull request or commit for traceability.
 
 ## Command
-`make test` run on 2025-08-14 at 18:14 UTC for commit 32536b0.
+`make test` run on 2025-08-14 at 18:40 UTC for commit 9bff27a.
 
 ## Output
 ```
-No tests were found!!!
-gmake[2]: Leaving directory '/workspace/cross-compile/build/cpp-service'
-gmake[1]: Leaving directory '/workspace/cross-compile/build/cpp-service'
-ctest --test-dir build/cpp-service || true
-Internal ctest changing into directory: /workspace/cross-compile/build/cpp-service
-Test project /workspace/cross-compile/build/cpp-service
-PYTHONPATH=.:$PYTHONPATH pytest || [ $? -eq 5 ]
-===================================================== test session starts ======================================================
-platform linux -- Python 3.12.10, pytest-8.4.1, pluggy-1.6.0
-rootdir: /workspace/cross-compile
-configfile: pyproject.toml
-collected 8 items
-
-python-worker/tests/test_sensor.py .                                                                                     [ 12%]
-python_worker/tests/test_sensor.py .                                                                                     [ 25%]
-tests/test_integration.py .                                                                                              [ 37%]
-tests/test_service.py ..                                                                                                 [ 62%]
-tests/test_worker.py ...                                                                                                 [100%]
-
-python -m py_compile python-worker/worker.py
+/workspace/cross-compile/cpp-service/DataService.cpp:9:10: fatal error: zmq.h: No such file or directory
+    9 | #include <zmq.h>
+      |          ^~~~~~~
+compilation terminated.
+gmake[3]: *** [CMakeFiles/data_service.dir/build.make:76: CMakeFiles/data_service.dir/DataService.cpp.o] Error 1
+gmake[2]: *** [CMakeFiles/Makefile2:111: CMakeFiles/data_service.dir/all] Error 2
+gmake[1]: *** [Makefile:91: all] Error 2
+make: *** [Makefile:14: test] Error 2
 ```
