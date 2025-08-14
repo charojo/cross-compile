@@ -16,7 +16,11 @@ jobs:
       - name: Install dependencies
         run: |
           apt-get update
-          apt-get install -y curl cmake libprotobuf-dev protobuf-compiler gcc-aarch64-linux-gnu g++-aarch64-linux-gnu python3-pip clang-format
+          apt-get install -y \
+            curl cmake libprotobuf-dev protobuf-compiler \
+            gcc-aarch64-linux-gnu g++-aarch64-linux-gnu python3-pip clang-format \
+            libzmq3-dev libzmq3-dev:arm64 libsqlite3-dev libsqlite3-dev:arm64 pkg-config \
+            qemu-user qemu-user-static qemu-system-aarch64
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
           rustup target add aarch64-unknown-linux-gnu
@@ -28,5 +32,5 @@ jobs:
         run: |
           make build
           test -f build/cpp-service/libsensor_service.so
-     - name: Test
+      - name: Test
         run: make test
