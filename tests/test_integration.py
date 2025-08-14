@@ -91,9 +91,11 @@ def test_end_to_end_message_flow():
     event = worker.process(poller, sub_socket, req_socket)
     assert event is not None
     assert event.user_id == 1
+    assert event.field == "name"
     time.sleep(0.1)
     assert service.received_get_requests
     assert service.received_get_requests[0].user_id == 1
+    assert service.received_get_requests[0].field == "name"
 
     client.close(0)
     ctx.term()

@@ -2,6 +2,7 @@ syntax = "proto3";
 
 message GetUserRequest {
   int32 user_id = 1;
+  string field = 2;
 }
 
 message UpdateUserRequest {
@@ -30,6 +31,7 @@ message GetUserResponse {
   int32 user_id = 2;
   string name = 3;
   int32 age = 4;
+  string value = 5;
 }
 
 message SensorReading {
