@@ -18,9 +18,14 @@ from python_worker import worker
 def _launch_service() -> subprocess.Popen[bytes]:
     """Build and launch the ARM data service under QEMU."""
 
+    import shutil, pytest
+
+    if not shutil.which("qemu-aarch64"):
+        pytest.skip("qemu-aarch64 not available")
+
     root = pathlib.Path(__file__).resolve().parents[1]
     subprocess.run(["make", "build"], cwd=root, check=True)
-    binary = root / "cpp-service" / "data_service"
+    binary = (root / "cpp-service" / "data_service").resolve()
     proc = subprocess.Popen(
         ["qemu-aarch64", "-L", "/usr/aarch64-linux-gnu", str(binary)],
         stdout=subprocess.PIPE,
