@@ -15,6 +15,9 @@
 - Run `make test` before pushing changes. All tests must pass.
 - Docs-only changes must still run `make test` to confirm nothing breaks.
 - Refresh `tests/TEST_REPORT.md` with the latest `make test` output on every merged change.
+- Each subsystem keeps its test suite in a `tests/` directory using `pytest` or
+  `pytest-bdd`.
+- New features start as failing scenarios or unit tests before implementation.
 
 ## Project Documentation
 - Update `plan.md` when the feature roadmap changes or new features are added.
