@@ -1,0 +1,24 @@
+{
+  "name": "cross-compile-dev",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "dev",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cpptools",
+        "ms-python.python",
+        "rust-lang.rust-analyzer",
+        "ms-azuretools.vscode-docker",
+        "tamasfe.even-better-toml"
+      ]
+    }
+  },
+  "forwardPorts": [5555],
+  "mounts": [
+    "source=build-cache,target=/workspace/build,type=volume",
+    "source=ccache,target=/root/.ccache,type=volume",
+    "source=cargo-target,target=/workspace/rust-agent/target,type=volume"
+  ],
+  "postCreateCommand": "/workspace/.devcontainer/post-create.sh"
+}
