@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Install lcov and cargo-tarpaulin
+        run: sudo apt-get update && sudo apt-get install -y lcov && cargo install cargo-tarpaulin
+
+      - name: Build C++ with coverage
+        run: |
+          g++ -std=c++17 --coverage cpp-service/DataService.cpp -o cpp-service/data_service
+          ./cpp-service/data_service
+          lcov --capture --directory cpp-service --output-file cpp-service.info
+          lcov --summary cpp-service.info
+          LINE_COV=$(lcov --summary cpp-service.info 2>&1 | grep lines | awk '{print $2}' | tr -d '%')
+          python - "$LINE_COV" <<'PY'
+import sys
+cov=float(sys.argv[1])
+threshold=80.0
+if cov < threshold:
+    print(f"C++ coverage {cov}% is below threshold {threshold}%")
+    sys.exit(1)
+PY
+
+      - name: Run Python tests with coverage
+        run: |
+          pip install pytest pytest-cov
+          pytest python-worker/tests --cov=python-worker --cov-fail-under=80
+
+      - name: Run Rust tests with coverage
+        working-directory: rust-agent
+        run: |
+          cargo tarpaulin --fail-under 80
