@@ -16,5 +16,6 @@ Call Stack (most recent call first):
   CMakeLists.txt:16 (find_package)
 
 
+-- Configuring incomplete, errors occurred!
 make: *** [Makefile:15: test] Error 1
 ```

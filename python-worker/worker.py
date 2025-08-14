@@ -2,7 +2,15 @@
 
 from __future__ import annotations
 
-import zmq
+from typing import TYPE_CHECKING
+
+try:  # pragma: no cover - optional dependency for runtime use
+    import zmq
+except ModuleNotFoundError:  # pragma: no cover - allow type checking without pyzmq
+    if TYPE_CHECKING:  # pragma: no cover
+        import zmq  # type: ignore
+    zmq = None  # type: ignore
+
 from proto import data_pb2
 
 SUB_ENDPOINT = "tcp://localhost:5556"
@@ -35,12 +43,21 @@ def process(poller: zmq.Poller, sub_socket, req_socket):
     """
     events = dict(poller.poll())
     if sub_socket in events:
-        raw = sub_socket.recv()
-        event = data_pb2.UpdateUserEvent()
-        event.ParseFromString(raw)
-        request = data_pb2.GetUserRequest(user_id=event.user_id)
-        req_socket.send(request.SerializeToString())
-        return event
+        try:
+            mtype, raw = sub_socket.recv_multipart()
+        except ValueError:  # pragma: no cover
+            return None
+        if mtype == b"UpdateUserEvent":
+            event = data_pb2.UpdateUserEvent()
+            event.ParseFromString(raw)
+            request = data_pb2.GetUserRequest(user_id=event.user_id)
+            req_socket.send_multipart([b"GetUserRequest", request.SerializeToString()])
+            # Maintain REQ/REP handshake
+            try:  # pragma: no cover - best effort
+                req_socket.recv_multipart()
+            except zmq.ZMQError:
+                pass
+            return event
     return None
 
 
