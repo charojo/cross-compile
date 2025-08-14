@@ -53,8 +53,14 @@ def test_sensor_reading_pub_sub_roundtrip():
     ctx = zmq.Context()
     pub_socket, sub_socket = worker.setup_sensor_pubsub(ctx, "inproc://sensor-test")
     reading = data_pb2.SensorReading(sensor_id=7, value=1.23, timestamp=99)
-
-    time.sleep(0.05)
+    poller = zmq.Poller()
+    poller.register(pub_socket, zmq.POLLOUT)
+    end_time = time.time() + 1
+    while time.time() < end_time:
+        if poller.poll(50):
+            break
+    else:
+        raise TimeoutError("subscriber handshake timed out")
     worker.send_sensor_reading(pub_socket, reading)
     received = worker.recv_sensor_reading(sub_socket)
     assert received == reading
