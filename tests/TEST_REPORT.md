@@ -2,7 +2,7 @@
 This document summarizes the latest `make test` run for each merged feature. Include the abbreviated commit ID and a link to the relevant pull request or commit for traceability.
 
 ## Command
-`make test` run on 2025-08-14 at 20:39 UTC for commit 25232ce.
+`make test` run on 2025-08-14 at 20:22 UTC for commit d81afb1.
 
 ## Output
 ```
@@ -30,6 +30,31 @@ make: *** [Makefile:13: test] Error 1
 ```
 ./scripts/gen-protos.sh
 cmake -S cpp-service -B build/cpp-service
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /workspace/cross-compile/build/cpp-service
+cmake --build build/cpp-service
+gmake[1]: Entering directory '/workspace/cross-compile/build/cpp-service'
+gmake[2]: Entering directory '/workspace/cross-compile/build/cpp-service'
+gmake[3]: Entering directory '/workspace/cross-compile/build/cpp-service'
+gmake[3]: Leaving directory '/workspace/cross-compile/build/cpp-service'
+[ 42%] Built target sensor_service
+gmake[3]: Entering directory '/workspace/cross-compile/build/cpp-service'
+gmake[3]: Leaving directory '/workspace/cross-compile/build/cpp-service'
+gmake[3]: Entering directory '/workspace/cross-compile/build/cpp-service'
+[ 57%] Building CXX object CMakeFiles/data_service.dir/DataService.cpp.o
+/workspace/cross-compile/cpp-service/DataService.cpp:10:10: fatal error: zmq.h: No such file or directory
+   10 | #include <zmq.h>
+      |          ^~~~~~~
+compilation terminated.
+gmake[3]: *** [CMakeFiles/data_service.dir/build.make:76: CMakeFiles/data_service.dir/DataService.cpp.o] Error 1
+gmake[3]: Leaving directory '/workspace/cross-compile/build/cpp-service'
+gmake[2]: *** [CMakeFiles/Makefile2:111: CMakeFiles/data_service.dir/all] Error 2
+gmake[2]: Leaving directory '/workspace/cross-compile/build/cpp-service'
+gmake[1]: *** [Makefile:91: all] Error 2
+gmake[1]: Leaving directory '/workspace/cross-compile/build/cpp-service'
+make: *** [Makefile:14: test] Error 2
+=======
 -- Checking for module 'libzmq'
 --   Package 'libzmq', required by 'virtual:world', not found
 CMake Error at /usr/share/cmake-3.28/Modules/FindPkgConfig.cmake:619 (message):
@@ -44,6 +69,7 @@ Call Stack (most recent call first):
 
 -- Configuring incomplete, errors occurred!
 make: *** [Makefile:13: test] Error 1
+
 ```
 
 ## Command
