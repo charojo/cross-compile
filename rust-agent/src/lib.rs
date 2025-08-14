@@ -1,12 +1,15 @@
 use prost::Message;
-use std::sync::{Arc, atomic::{AtomicU64, Ordering}};
+use std::sync::{
+    Arc,
+    atomic::{AtomicU64, Ordering},
+};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 pub mod proto {
     include!(concat!(env!("OUT_DIR"), "/data.rs"));
 }
 
-use proto::{SensorReading, ControlCommand};
+use proto::{ControlCommand, SensorReading};
 
 pub fn run() {
     let context = zmq::Context::new();
@@ -54,7 +57,7 @@ pub fn run() {
 mod tests {
     use super::proto::{ControlCommand, SensorReading};
     use prost::Message;
-    use std::{thread, time::Duration};
+    use std::time::{Duration, Instant};
 
     #[test]
     fn sensor_reading_roundtrip() {
@@ -66,11 +69,22 @@ mod tests {
         sub_socket.connect(endpoint).unwrap();
         sub_socket.set_subscribe(b"").unwrap();
 
-        let reading = SensorReading { sensor_id: 7, value: 1.23, timestamp: 99 };
+        let reading = SensorReading {
+            sensor_id: 7,
+            value: 1.23,
+            timestamp: 99,
+        };
         let mut buf = Vec::new();
         reading.encode(&mut buf).unwrap();
 
-        thread::sleep(Duration::from_millis(50));
+        let mut items = [pub_socket.as_poll_item(zmq::POLLOUT)];
+        let start = Instant::now();
+        while !items[0].is_writable() {
+            zmq::poll(&mut items, 10).unwrap();
+            if start.elapsed() > Duration::from_secs(1) {
+                panic!("subscriber handshake timed out");
+            }
+        }
         pub_socket.send(buf, 0).unwrap();
 
         let bytes = sub_socket.recv_bytes(0).unwrap();
@@ -92,7 +106,14 @@ mod tests {
         let mut buf = Vec::new();
         cmd.encode(&mut buf).unwrap();
 
-        thread::sleep(Duration::from_millis(50));
+        let mut items = [pub_socket.as_poll_item(zmq::POLLOUT)];
+        let start = Instant::now();
+        while !items[0].is_writable() {
+            zmq::poll(&mut items, 10).unwrap();
+            if start.elapsed() > Duration::from_secs(1) {
+                panic!("subscriber handshake timed out");
+            }
+        }
         pub_socket.send(buf, 0).unwrap();
 
         let bytes = sub_socket.recv_bytes(0).unwrap();
