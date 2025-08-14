@@ -25,6 +25,5 @@ tests/test_integration.py .                                                     
 tests/test_service.py ..                                                                                                 [ 62%]
 tests/test_worker.py ...                                                                                                 [100%]
 
-====================================================== 8 passed in 0.80s =======================================================
 python -m py_compile python-worker/worker.py
 ```
