@@ -1,4 +1,4 @@
-#include "data.pb.h"
+#include "../proto.h"
 #include <mutex>
 #include <sqlite3.h>
 #include <string>
@@ -39,9 +39,9 @@ int service_handle_reading(sqlite3 *db, const char *data, int len) {
   if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
     return 0;
   }
-  sqlite3_bind_int(stmt, 1, reading.sensor_id());
-  sqlite3_bind_double(stmt, 2, reading.value());
-  sqlite3_bind_int64(stmt, 3, reading.timestamp());
+  sqlite3_bind_int(stmt, 1, reading.sensor_id);
+  sqlite3_bind_double(stmt, 2, reading.value);
+  sqlite3_bind_int64(stmt, 3, reading.timestamp);
   bool ok = sqlite3_step(stmt) == SQLITE_DONE;
   sqlite3_finalize(stmt);
   return ok ? 1 : 0;
@@ -57,11 +57,11 @@ void service_process_command(const char *data, int len) {
     return;
   }
   std::lock_guard<std::mutex> lock(g_mutex);
-  if (cmd.new_rate() != 0) {
-    g_rate = cmd.new_rate();
+  if (cmd.new_rate != 0) {
+    g_rate = cmd.new_rate;
   }
-  if (!cmd.target().empty()) {
-    g_target = cmd.target();
+  if (!cmd.target.empty()) {
+    g_target = cmd.target;
   }
 }
 
