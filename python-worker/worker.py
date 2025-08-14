@@ -2,7 +2,15 @@
 
 from __future__ import annotations
 
-import zmq
+from typing import TYPE_CHECKING
+
+try:  # pragma: no cover - optional dependency for runtime use
+    import zmq
+except ModuleNotFoundError:  # pragma: no cover - allow type checking without pyzmq
+    if TYPE_CHECKING:  # pragma: no cover
+        import zmq  # type: ignore
+    zmq = None  # type: ignore
+
 from proto import data_pb2
 
 SUB_ENDPOINT = "tcp://localhost:5556"
