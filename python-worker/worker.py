@@ -1,24 +1,49 @@
-import argparse
-import logging
+"""ZeroMQ-based worker that reacts to user update events."""
+from __future__ import annotations
 
-LOG_FORMAT = "%""%(asctime)s %(levelname)s [%(message_id)s] [trace=%(trace_id)s] %(message)s"""
+import zmq
+from proto import data_pb2
 
-def configure_logging(level: str) -> None:
-    logging.basicConfig(level=level.upper(), format=LOG_FORMAT)
+SUB_ENDPOINT = "tcp://localhost:5556"
+REQ_ENDPOINT = "tcp://localhost:5555"
 
+def setup(context: zmq.Context | None = None):
+    """Create sockets and poller for the worker."""
+    context = context or zmq.Context()
+    sub_socket = context.socket(zmq.SUB)
+    sub_socket.connect(SUB_ENDPOINT)
+    # Subscribe to all topics
+    try:
+        sub_socket.setsockopt_string(zmq.SUBSCRIBE, "")
+    except AttributeError:  # pragma: no cover - for simple mocks lacking method
+        pass
+
+    req_socket = context.socket(zmq.REQ)
+    req_socket.connect(REQ_ENDPOINT)
+
+    poller = zmq.Poller()
+    poller.register(sub_socket, zmq.POLLIN)
+    return poller, sub_socket, req_socket
+
+def process(poller: zmq.Poller, sub_socket, req_socket):
+    """Handle a single poll cycle.
+
+    Returns the parsed UpdateUserEvent if one was received, otherwise ``None``.
+    """
+    events = dict(poller.poll())
+    if sub_socket in events:
+        raw = sub_socket.recv()
+        event = data_pb2.UpdateUserEvent()
+        event.ParseFromString(raw)
+        request = data_pb2.GetUserRequest(user_id=event.user_id)
+        req_socket.send(request.SerializeToString())
+        return event
+    return None
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--log-level", default="INFO")
-    parser.add_argument("--trace-id", type=int, default=0)
-    args = parser.parse_args()
-
-    configure_logging(args.log_level)
-    logger = logging.LoggerAdapter(logging.getLogger(__name__), {
-        "trace_id": args.trace_id,
-        "message_id": "PY1001",
-    })
-    logger.info("Python worker active")
+    poller, sub_socket, req_socket = setup()
+    while True:
+        process(poller, sub_socket, req_socket)
 
 if __name__ == "__main__":
     main()

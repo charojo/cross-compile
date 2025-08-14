@@ -29,12 +29,22 @@ fn main() {
     }
     init_logger(trace_id);
     info!(target: "RS1001", "Rust agent ready");
+
+    rust_agent::run();
+    println!("Rust agent ready");
+}
+
+pub mod proto {
+    include!(concat!(env!("OUT_DIR"), "/data.rs"));
 }
 
 #[cfg(test)]
 mod tests {
+    use super::proto::GetUserRequest;
+
     #[test]
     fn it_runs() {
+        let _req = GetUserRequest { user_id: 1 };
         assert_eq!(2 + 2, 4);
     }
 }

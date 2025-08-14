@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      - .:/workspace:cached
+      - build-cache:/workspace/build
+      - ccache:/root/.ccache
+      - cargo-target:/workspace/rust-agent/target
+    tty: true
+volumes:
+  build-cache:
+  ccache:
+  cargo-target:

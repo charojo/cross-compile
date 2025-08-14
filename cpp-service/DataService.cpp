@@ -1,21 +1,77 @@
-#include <spdlog/spdlog.h>
+
+#include <iostream>
 #include <string>
-#include <cstdint>
+#include <zmq.hpp>
+#include "Cache.h"
+#include "Database.h"
+#include "data.pb.h"
 
-int main(int argc, char* argv[]) {
-    std::string level = "info";
-    std::uint64_t trace_id = 0;
+int main() {
+    Cache cache;
+    Database db("users.db", cache);
 
-    for (int i = 1; i < argc; ++i) {
-        std::string arg = argv[i];
-        if (arg == "--log-level" && i + 1 < argc) {
-            level = argv[++i];
-        } else if (arg == "--trace-id" && i + 1 < argc) {
-            trace_id = std::stoull(argv[++i]);
+    zmq::context_t context{1};
+    zmq::socket_t rep{context, zmq::socket_type::rep};
+    rep.bind("tcp://0.0.0.0:5555");
+    zmq::socket_t pub{context, zmq::socket_type::pub};
+    pub.bind("tcp://0.0.0.0:5556");
+
+    while (true) {
+        zmq::message_t typeMsg;
+        zmq::message_t dataMsg;
+        if (!rep.recv(typeMsg, zmq::recv_flags::none)) {
+            break;
+        }
+        if (!rep.recv(dataMsg, zmq::recv_flags::none)) {
+            break;
+        }
+        std::string type(static_cast<char*>(typeMsg.data()), typeMsg.size());
+
+        if (type == "UpdateUserRequest") {
+            UpdateUserRequest req;
+            req.ParseFromArray(dataMsg.data(), dataMsg.size());
+            bool success = db.UpdateUser(req.user_id(), req.field(), req.value());
+            UpdateUserResponse resp;
+            resp.set_success(success);
+            resp.set_message(success ? "updated" : "error");
+            std::string respStr;
+            resp.SerializeToString(&respStr);
+            rep.send(zmq::str_buffer("UpdateUserResponse"), zmq::send_flags::sndmore);
+            rep.send(zmq::buffer(respStr));
+
+            UpdateUserEvent ev;
+            ev.set_user_id(req.user_id());
+            ev.set_field(req.field());
+            ev.set_value(req.value());
+            std::string evStr;
+            ev.SerializeToString(&evStr);
+            pub.send(zmq::str_buffer("UpdateUserEvent"), zmq::send_flags::sndmore);
+            pub.send(zmq::buffer(evStr));
+        } else if (type == "GetUserRequest") {
+            GetUserRequest req;
+            req.ParseFromArray(dataMsg.data(), dataMsg.size());
+            GetUserResponse resp;
+            std::string value = db.GetUser(req.user_id(), req.field());
+            if (!value.empty()) {
+                resp.set_found(true);
+                resp.set_value(value);
+            } else {
+                resp.set_found(false);
+            }
+            std::string respStr;
+            resp.SerializeToString(&respStr);
+            rep.send(zmq::str_buffer("GetUserResponse"), zmq::send_flags::sndmore);
+            rep.send(zmq::buffer(respStr));
+        } else {
+            UpdateUserResponse resp;
+            resp.set_success(false);
+            resp.set_message("unknown request");
+            std::string respStr;
+            resp.SerializeToString(&respStr);
+            rep.send(zmq::str_buffer("UpdateUserResponse"), zmq::send_flags::sndmore);
+            rep.send(zmq::buffer(respStr));
         }
     }
 
-    spdlog::set_level(spdlog::level::from_str(level));
-    spdlog::info("[DS1001][trace={}]: Data Service running", trace_id);
-    return 0;
+  return 0;
 }
