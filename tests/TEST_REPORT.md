@@ -15,7 +15,6 @@ Call Stack (most recent call first):
   /usr/share/cmake-3.28/Modules/FindProtobuf.cmake:749 (FIND_PACKAGE_HANDLE_STANDARD_ARGS)
   CMakeLists.txt:16 (find_package)
 
-
 -- Configuring incomplete, errors occurred!
 make: *** [Makefile:15: test] Error 1
 ```
