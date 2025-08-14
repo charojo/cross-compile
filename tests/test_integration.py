@@ -1,5 +1,6 @@
 import threading
 import time
+
 import zmq
 
 from proto import data_pb2
@@ -36,7 +37,7 @@ class DataServiceStub(threading.Thread):
                     resp = data_pb2.UpdateUserResponse(success=True, message="ok")
                     self.rep.send_multipart(
                         [b"UpdateUserResponse", resp.SerializeToString()]
-                    )
+                    )  # type frame before body
                     event = data_pb2.UpdateUserEvent(
                         user_id=update.user_id,
                         field=update.field,
@@ -44,7 +45,7 @@ class DataServiceStub(threading.Thread):
                     )
                     self.pub.send_multipart(
                         [b"UpdateUserEvent", event.SerializeToString()]
-                    )
+                    )  # type frame before body
                 elif mtype == b"GetUserRequest":
                     get_req = data_pb2.GetUserRequest()
                     get_req.ParseFromString(msg)
@@ -52,7 +53,7 @@ class DataServiceStub(threading.Thread):
                     resp = data_pb2.GetUserResponse(found=True, value="")
                     self.rep.send_multipart(
                         [b"GetUserResponse", resp.SerializeToString()]
-                    )
+                    )  # type frame before body
                 else:  # pragma: no cover - unknown message type
                     pass
 
@@ -83,7 +84,8 @@ def test_end_to_end_message_flow():
             update.SerializeToString(),
         ]
     )
-    _, raw = client.recv_multipart()
+    mtype, raw = client.recv_multipart()
+    assert mtype == b"UpdateUserResponse"
     resp = data_pb2.UpdateUserResponse()
     resp.ParseFromString(raw)
     assert resp.success
