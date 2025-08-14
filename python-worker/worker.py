@@ -2,14 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-try:  # pragma: no cover - optional dependency for runtime use
-    import zmq
-except ModuleNotFoundError:  # pragma: no cover - allow type checking without pyzmq
-    if TYPE_CHECKING:  # pragma: no cover
-        import zmq  # type: ignore
-    zmq = None  # type: ignore
+import zmq
 
 from proto import data_pb2
 
