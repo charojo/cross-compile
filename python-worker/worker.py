@@ -74,6 +74,7 @@ def setup_sensor_pubsub(
 
 
 def main() -> None:
+    print("Python worker active")
     poller, sub_socket, req_socket = setup()
     while True:
         process(poller, sub_socket, req_socket)
