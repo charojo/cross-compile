@@ -12,7 +12,6 @@ htmlcov/
 **/__pycache__/
 build/
 cpp-service/generated/
-proto/generated/
 proto/data_pb2.py
 proto/*.pb.cc
 proto/*.pb.h
