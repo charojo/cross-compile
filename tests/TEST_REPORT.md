@@ -2,17 +2,22 @@
 This document summarizes the latest `make test` run for each merged feature. Include the abbreviated commit ID and a link to the relevant pull request or commit for traceability.
 
 ## Command
-`make test` run on 2025-08-14 at 17:30 UTC.
+`make test` run on 2025-08-14 at 18:12 UTC.
 
 ## Output
 ```
-CMake Error at /usr/share/cmake-3.28/Modules/FindPackageHandleStandardArgs.cmake:230 (message):
-  Could NOT find Protobuf (missing: Protobuf_LIBRARIES Protobuf_INCLUDE_DIR)
-Call Stack (most recent call first):
-  /usr/share/cmake-3.28/Modules/FindPackageHandleStandardArgs.cmake:600 (_FPHSA_FAILURE_MESSAGE)
-  /usr/share/cmake-3.28/Modules/FindProtobuf.cmake:749 (FIND_PACKAGE_HANDLE_STANDARD_ARGS)
-  CMakeLists.txt:16 (find_package)
+===================================================== test session starts ======================================================
+platform linux -- Python 3.12.10, pytest-8.4.1, pluggy-1.6.0
+rootdir: /workspace/cross-compile
+configfile: pyproject.toml
+collected 8 items
 
+python-worker/tests/test_sensor.py .                                                                                     [ 12%]
+python_worker/tests/test_sensor.py .                                                                                     [ 25%]
+tests/test_integration.py .                                                                                              [ 37%]
+tests/test_service.py ..                                                                                                 [ 62%]
+tests/test_worker.py ...                                                                                                 [100%]
 
-make: *** [Makefile:15: test] Error 1
+====================================================== 8 passed in 0.87s =======================================================
+python -m py_compile python-worker/worker.py
 ```

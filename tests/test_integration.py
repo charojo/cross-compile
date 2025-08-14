@@ -1,5 +1,5 @@
-import threading
-import time
+import threading  # Used to run the service stub in a background thread
+import time  # Used to pause execution during setup
 
 import zmq
 
