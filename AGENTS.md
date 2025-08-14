@@ -1,6 +1,7 @@
 # Contributor Guide
 
 ## Code Style
+- Run `pre-commit install` to enable automatic formatting checks.
 - Rust: run `cargo fmt --all` and `cargo clippy --all-targets --all-features`.
 - Python: format with `black` and lint with `flake8`.
 - C++: format with `clang-format` using the repository configuration.
