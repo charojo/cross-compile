@@ -2,7 +2,6 @@ import threading
 import time
 import zmq
 
-from google.protobuf.message import DecodeError
 from proto import data_pb2
 from python_worker import worker
 
@@ -30,24 +29,32 @@ class DataServiceStub(threading.Thread):
         while not self._stop.is_set():
             socks = dict(poller.poll(100))
             if self.rep in socks:
-                msg = self.rep.recv()
-                try:
+                mtype, msg = self.rep.recv_multipart()
+                if mtype == b"UpdateUserRequest":
                     update = data_pb2.UpdateUserRequest()
                     update.ParseFromString(msg)
                     resp = data_pb2.UpdateUserResponse(success=True, message="ok")
-                    self.rep.send(resp.SerializeToString())
+                    self.rep.send_multipart(
+                        [b"UpdateUserResponse", resp.SerializeToString()]
+                    )
                     event = data_pb2.UpdateUserEvent(
                         user_id=update.user_id,
                         field=update.field,
                         value=update.value,
                     )
-                    self.pub.send(event.SerializeToString())
-                except DecodeError:
+                    self.pub.send_multipart(
+                        [b"UpdateUserEvent", event.SerializeToString()]
+                    )
+                elif mtype == b"GetUserRequest":
                     get_req = data_pb2.GetUserRequest()
                     get_req.ParseFromString(msg)
                     self.received_get_requests.append(get_req)
                     resp = data_pb2.GetUserResponse(found=True, value="")
-                    self.rep.send(resp.SerializeToString())
+                    self.rep.send_multipart(
+                        [b"GetUserResponse", resp.SerializeToString()]
+                    )
+                else:  # pragma: no cover - unknown message type
+                    pass
 
     def stop(self):
         self._stop.set()
@@ -70,9 +77,15 @@ def test_end_to_end_message_flow():
     client = ctx.socket(zmq.REQ)
     client.connect("tcp://127.0.0.1:5555")
     update = data_pb2.UpdateUserRequest(user_id=1, field="name", value="Alice")
-    client.send(update.SerializeToString())
+    client.send_multipart(
+        [
+            b"UpdateUserRequest",
+            update.SerializeToString(),
+        ]
+    )
+    _, raw = client.recv_multipart()
     resp = data_pb2.UpdateUserResponse()
-    resp.ParseFromString(client.recv())
+    resp.ParseFromString(raw)
     assert resp.success
 
     event = worker.process(poller, sub_socket, req_socket)
