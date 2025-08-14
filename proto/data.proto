@@ -1,12 +1,54 @@
 syntax = "proto3";
 
+message GetUserRequest {
+  int32 user_id = 1;
+}
+
 message UpdateUserRequest {
   int32 user_id = 1;
   string field = 2;
   string value = 3;
+  uint64 trace_id = 4;
 }
 
 message UpdateUserResponse {
   bool success = 1;
   string message = 2;
+  uint64 trace_id = 3;
+}
+
+message UpdateUserEvent {
+  int32 user_id = 1;
+  string field = 2;
+  string old_value = 3;
+  string new_value = 4;
+  string value = 5;
+}
+
+message GetUserRequest {
+  int32 user_id = 1;
+}
+
+message GetUserResponse {
+  bool found = 1;
+  int32 user_id = 2;
+  string name = 3;
+  int32 age = 4;
+}
+
+message SensorReading {
+  int32 sensor_id = 1;
+  double value = 2;
+  int64 timestamp = 3;
+}
+
+message SensorData {
+  string sensor_id = 1;
+  double value = 2;
+}
+
+message ControlCommand {
+  uint64 new_rate = 1;
+  string target = 2;
+  string command = 3;
 }
