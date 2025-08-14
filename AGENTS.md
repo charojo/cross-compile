@@ -23,3 +23,6 @@
 ## Pull Requests
 - Ensure this guide has been followed before submitting a PR.
 - Each PR requires at least one reviewer approval and a clear description of changes.
+
+## Auto-merge
+- Apply the `automerge` label to enable GitHub's auto-merge once checks and approvals pass.
