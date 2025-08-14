@@ -10,6 +10,11 @@ By using modern containerized development practices and proven OSS components, w
 
 Moving forward, this scaffold can be extended with more services or tools as needed (e.g., adding a web UI container, or integrating a simulator for hardware inputs). Its modular nature and adherence to standards mean such additions can be made without restructuring the whole environment. Developers and stakeholders can be confident that this foundation will scale with the project’s needs, all while maintaining the **core principles of real-time, reliable, cross-language communication** that are essential for the product’s success.
 
+## Project Plan
+
+The overall roadmap and milestone breakdown live in [project/plan.md](project/plan.md).
+Current feature status and links to issues or pull requests are tracked in [project/tracking.md](project/tracking.md).
+
 ## Architecture and Technology Stack Overview
 
 To support **embedded cross-platform development** on the NXP i.MX8MP (Cortex-A53) platform, this scaffold follows the proven **Option A architecture** combining **ZeroMQ**, **Protobuf**, **SQLite**, and real-time messaging principles. In this design, a central **Data Service** coordinates state with an in-memory cache and persistent SQLite storage, while multiple microservices (in C++, Python, Rust) communicate via a **ZeroMQ message bus** using **Protocol Buffers** for schema-defined data. This approach provides low-latency IPC (REQ/REP for requests and PUB/SUB for event broadcasting), strongly-typed cross-language messages, and lightweight embeddable persistence. Real-time pub/sub messaging ensures that updates propagate to subscribers immediately, aligning with the platform goal of **real-time data sharing and updates across independent services**. Dynamic service discovery (via **Zyre** library) is included for peer discovery without central brokers, reflecting the requirement for modular extensibility in distributed deployments. Overall, this technology stack is chosen for its **high performance, cross-platform interoperability, and small footprint**, making it ideal for embedded Linux/Android environments.
