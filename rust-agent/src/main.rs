@@ -3,6 +3,7 @@ pub mod proto {
 }
 
 fn main() {
+    rust_agent::run();
     println!("Rust agent ready");
 }
 

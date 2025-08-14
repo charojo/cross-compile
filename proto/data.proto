@@ -34,12 +34,19 @@ message GetUserResponse {
   int32 age = 4;
 }
 
+message SensorReading {
+  int32 sensor_id = 1;
+  double value = 2;
+  int64 timestamp = 3;
+}
+
 message SensorData {
   string sensor_id = 1;
   double value = 2;
 }
 
 message ControlCommand {
-  string target = 1;
-  string command = 2;
+  uint64 new_rate = 1;
+  string target = 2;
+  string command = 3;
 }
