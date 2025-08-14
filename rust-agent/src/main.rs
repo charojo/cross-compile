@@ -1,50 +1,49 @@
-use chrono::Utc;
-use log::info;
-use std::env;
+use prost::Message;
+use std::time::{SystemTime, UNIX_EPOCH};
 
-fn init_logger(trace_id: String) {
-    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info"))
-        .format(move |buf, record| {
-            use std::io::Write;
-            writeln!(
-                buf,
-                "{} {} [{}] [trace={}] {}",
-                Utc::now().to_rfc3339(),
-                record.level(),
-                record.target(),
-                trace_id,
-                record.args()
-            )
-        })
-        .init();
+mod proto {
+    include!(concat!(env!("OUT_DIR"), "/data.rs"));
 }
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    let mut trace_id = String::from("0");
-    for i in 0..args.len() {
-        if args[i] == "--trace-id" && i + 1 < args.len() {
-            trace_id = args[i + 1].clone();
-        }
-    }
-    init_logger(trace_id);
-    info!(target: "RS1001", "Rust agent ready");
+    // Set up a ZeroMQ publisher.
+    let ctx = zmq::Context::new();
+    let publisher = ctx.socket(zmq::PUB).expect("create pub socket");
+    publisher.bind("tcp://*:5555").expect("bind pub socket");
 
-    rust_agent::run();
-    println!("Rust agent ready");
-}
+    // Construct a mock sensor reading.
+    let ts = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("time went backwards")
+        .as_secs() as i64;
+    let reading = proto::SensorReading {
+        sensor_id: 1,
+        value: 42.0,
+        timestamp: ts,
+    };
 
-pub mod proto {
-    include!(concat!(env!("OUT_DIR"), "/data.rs"));
+    // Encode and publish the message.
+    let mut buf = Vec::new();
+    reading.encode(&mut buf).expect("encode message");
+    publisher.send(buf, 0).expect("send message");
+
+    println!("Published mock SensorReading");
 }
 
 #[cfg(test)]
 mod tests {
-    use super::proto::GetUserRequest;
+    use super::proto::SensorReading;
+    use prost::Message;
 
     #[test]
-    fn it_runs() {
-        let _req = GetUserRequest { user_id: 1 };
-        assert_eq!(2 + 2, 4);
+    fn encodes_sensor_reading() {
+        let reading = SensorReading {
+            sensor_id: 1,
+            value: 0.0,
+            timestamp: 0,
+        };
+        let mut buf = Vec::new();
+        reading.encode(&mut buf).unwrap();
+        assert!(!buf.is_empty());
     }
 }
