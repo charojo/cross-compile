@@ -11,8 +11,6 @@ set(CMAKE_SYSTEM_PROCESSOR aarch64)
 set(CMAKE_C_COMPILER aarch64-linux-gnu-gcc)
 set(CMAKE_CXX_COMPILER aarch64-linux-gnu-g++)
 
-add_executable(data_service DataService.cpp)
-
 
 
 find_package(Protobuf REQUIRED)
@@ -20,8 +18,10 @@ include_directories(${Protobuf_INCLUDE_DIRS})
 
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ../proto/data.proto)
 
+add_library(sensor_service SHARED src/service.cpp ${PROTO_SRCS})
+target_include_directories(sensor_service PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_link_libraries(sensor_service PRIVATE protobuf::libprotobuf sqlite3)
+
 add_executable(data_service DataService.cpp Cache.cpp Database.cpp ${PROTO_SRCS})
-
 target_include_directories(data_service PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-
 target_link_libraries(data_service PRIVATE protobuf::libprotobuf sqlite3 zmq)

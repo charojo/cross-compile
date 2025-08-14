@@ -25,3 +25,4 @@ Build a cross-platform development scaffold enabling C++, Python, and Rust servi
 2. C++ data service with Protobuf schema and SQLite persistence.
 3. Python worker and Rust agent integration over ZeroMQ.
 4. End-to-end tests and CI pipeline.
+5. Sensor reading ingestion and control command handling.
