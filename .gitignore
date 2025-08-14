@@ -1,6 +1,15 @@
 cpp-service/data_service
 python-worker/__pycache__
 rust-agent/target
+
+# Coverage artifacts
+**/*.gcda
+**/*.gcno
+coverage.info
+*.lcov
+.coverage
+htmlcov/
+**/__pycache__/
 build/
 cpp-service/generated/
 python-worker/*_pb2.py
