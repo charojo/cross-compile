@@ -102,7 +102,11 @@ mod tests {
         sub_socket.connect(endpoint).unwrap();
         sub_socket.set_subscribe(b"").unwrap();
 
-        let cmd = ControlCommand { new_rate: 5 };
+        let cmd = ControlCommand {
+            new_rate: 5,
+            target: String::new(),
+            command: String::new(),
+        };
         let mut buf = Vec::new();
         cmd.encode(&mut buf).unwrap();
 

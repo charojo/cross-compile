@@ -1,6 +1,5 @@
-import time
-
 import zmq
+import time
 
 from proto import data_pb2
 from python_worker.worker import (
