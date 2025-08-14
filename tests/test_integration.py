@@ -1,5 +1,11 @@
-import threading  # Used to run the service stub in a background thread
-import time  # Used to pause execution during setup
+"""Integration test that exercises the real C++ data service."""
+
+from __future__ import annotations
+
+import pathlib
+import subprocess
+import threading
+import time
 
 import zmq
 
@@ -7,100 +13,61 @@ from proto import data_pb2
 from python_worker import worker
 
 
-class DataServiceStub(threading.Thread):
-    """Minimal stand-in for the C++ data service.
+def _launch_service() -> subprocess.Popen[bytes]:
+    """Build and launch the ARM data service under QEMU."""
 
-    It echoes update requests, publishes an event, and records get requests
-    sent by the worker.
-    """
-
-    def __init__(self):
-        super().__init__()
-        self._stop_event = threading.Event()
-        self.received_get_requests = []
-        self.context = zmq.Context()
-        self.rep = self.context.socket(zmq.REP)
-        self.rep.bind("tcp://127.0.0.1:5555")
-        self.pub = self.context.socket(zmq.PUB)
-        self.pub.bind("tcp://127.0.0.1:5556")
-
-    def run(self):
-        poller = zmq.Poller()
-        poller.register(self.rep, zmq.POLLIN)
-        while not self._stop_event.is_set():
-            socks = dict(poller.poll(100))
-            if self.rep in socks:
-                mtype, msg = self.rep.recv_multipart()
-                if mtype == b"UpdateUserRequest":
-                    update = data_pb2.UpdateUserRequest()
-                    update.ParseFromString(msg)
-                    resp = data_pb2.UpdateUserResponse(success=True, message="ok")
-                    self.rep.send_multipart(
-                        [b"UpdateUserResponse", resp.SerializeToString()]
-                    )  # type frame before body
-                    event = data_pb2.UpdateUserEvent(
-                        user_id=update.user_id,
-                        field=update.field,
-                        value=update.value,
-                    )
-                    self.pub.send_multipart(
-                        [b"UpdateUserEvent", event.SerializeToString()]
-                    )  # type frame before body
-                elif mtype == b"GetUserRequest":
-                    get_req = data_pb2.GetUserRequest()
-                    get_req.ParseFromString(msg)
-                    self.received_get_requests.append(get_req)
-                    resp = data_pb2.GetUserResponse(found=True, value="")
-                    self.rep.send_multipart(
-                        [b"GetUserResponse", resp.SerializeToString()]
-                    )  # type frame before body
-                else:  # pragma: no cover - unknown message type
-                    pass
-
-    def stop(self):
-        self._stop_event.set()
-        self.join()
-        self.rep.close(0)
-        self.pub.close(0)
-        self.context.term()
-
-
-def test_end_to_end_message_flow():
-    """Ensure that an update results in a worker query via ZeroMQ."""
-
-    service = DataServiceStub()
-    service.start()
-    time.sleep(0.2)
-    poller, sub_socket, req_socket = worker.setup()
-    time.sleep(0.2)
-
-    ctx = zmq.Context()
-    client = ctx.socket(zmq.REQ)
-    client.connect("tcp://127.0.0.1:5555")
-    update = data_pb2.UpdateUserRequest(user_id=1, field="name", value="Alice")
-    client.send_multipart(
-        [
-            b"UpdateUserRequest",
-            update.SerializeToString(),
-        ]
+    root = pathlib.Path(__file__).resolve().parents[1]
+    subprocess.run(["make", "build"], cwd=root, check=True)
+    binary = root / "cpp-service" / "data_service"
+    proc = subprocess.Popen(
+        ["qemu-aarch64", "-L", "/usr/aarch64-linux-gnu", str(binary)],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
-    mtype, raw = client.recv_multipart()
-    assert mtype == b"UpdateUserResponse"
-    resp = data_pb2.UpdateUserResponse()
-    resp.ParseFromString(raw)
-    assert resp.success
+    # Give the service time to bind to its sockets
+    time.sleep(0.5)
+    return proc
 
-    event = worker.process(poller, sub_socket, req_socket)
-    assert event is not None
-    assert event.user_id == 1
-    assert event.field == "name"
-    time.sleep(0.1)
-    assert service.received_get_requests
-    assert service.received_get_requests[0].user_id == 1
-    assert service.received_get_requests[0].field == "name"
 
-    client.close(0)
-    ctx.term()
-    service.stop()
-    sub_socket.close(0)
-    req_socket.close(0)
+def test_end_to_end_message_flow() -> None:
+    """Ensure that an update flows through the service and worker."""
+
+    proc = _launch_service()
+    try:
+        poller, sub_socket, req_socket = worker.setup()
+        time.sleep(0.2)
+
+        ctx = zmq.Context()
+        client = ctx.socket(zmq.REQ)
+        client.setsockopt(zmq.RCVTIMEO, 2000)
+        client.connect("tcp://127.0.0.1:5555")
+        update = data_pb2.UpdateUserRequest(user_id=1, field="name", value="Alice")
+        client.send_multipart([b"UpdateUserRequest", update.SerializeToString()])
+        mtype, raw = client.recv_multipart()
+        assert mtype == b"UpdateUserResponse"
+        resp = data_pb2.UpdateUserResponse()
+        resp.ParseFromString(raw)
+        assert resp.success
+
+        result: list[data_pb2.UpdateUserEvent | None] = []
+        thread = threading.Thread(
+            target=lambda: result.append(worker.process(poller, sub_socket, req_socket))
+        )
+        thread.start()
+        thread.join(timeout=5)
+        assert not thread.is_alive(), "worker.process timed out"
+        event = result[0]
+        assert event is not None
+        assert event.user_id == 1
+        assert event.field == "name"
+
+        client.close(0)
+        ctx.term()
+        sub_socket.close(0)
+        req_socket.close(0)
+    finally:
+        proc.terminate()
+        try:
+            proc.wait(timeout=5)
+        except subprocess.TimeoutExpired:  # pragma: no cover - best effort
+            proc.kill()
