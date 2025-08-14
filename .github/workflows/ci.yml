@@ -16,7 +16,7 @@ jobs:
       - name: Install dependencies
         run: |
           apt-get update
-          apt-get install -y curl cmake protobuf-compiler libprotobuf-dev gcc-aarch64-linux-gnu g++-aarch64-linux-gnu python3-pip clang-format
+          apt-get install -y curl cmake libprotobuf-dev protobuf-compiler gcc-aarch64-linux-gnu g++-aarch64-linux-gnu python3-pip clang-format
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
           rustup target add aarch64-unknown-linux-gnu
@@ -24,5 +24,9 @@ jobs:
           pip install pytest pre-commit
       - name: Pre-commit
         run: pre-commit run --all-files
-      - name: Test
+      - name: Build
+        run: |
+          make build
+          test -f build/cpp-service/libsensor_service.so
+     - name: Test
         run: make test
