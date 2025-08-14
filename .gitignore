@@ -1,3 +1,5 @@
 cpp-service/data_service
 python-worker/__pycache__
 rust-agent/target
+cpp-service/generated/
+python-worker/*_pb2.py
