@@ -11,11 +11,20 @@ See [../AGENTS.md](../AGENTS.md) for shared repository guidelines.
 
 ## Build
 - Configure and build with CMake:
-  
+
   ```
   cmake -S . -B build
   cmake --build build
   ```
+
+- To mirror CI locally and produce the shared library used by tests, run from
+  the repository root:
+
+  ```
+  make build
+  ```
+
+  This generates `build/cpp-service/libsensor_service.so`.
 
 ## Tests
 - Run the C++ tests via CTest:
