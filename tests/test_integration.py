@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 import contextlib
+import pathlib
 import subprocess
 import threading
 import time
-import pathlib
-import subprocess
 
 import zmq
 
