@@ -1,12 +1,9 @@
-import sys
 import time
-from pathlib import Path
 
 import zmq
 
-sys.path.append(str(Path(__file__).resolve().parents[1]))
 from proto import data_pb2
-from worker import (
+from python_worker.worker import (
     recv_sensor_reading,
     send_sensor_reading,
     setup_sensor_pubsub,
