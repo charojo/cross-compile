@@ -1,7 +1,7 @@
 import sys
-from unittest.mock import MagicMock, patch
 
 from proto import data_pb2
+from unittest.mock import MagicMock, patch
 
 
 def load_worker_with_mocked_zmq():
