@@ -18,9 +18,13 @@ RUN dpkg --add-architecture arm64 && dpkg --add-architecture armhf && \
     git curl wget ccache \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Python packages required for workers
+RUN pip3 install --no-cache-dir pyzmq protobuf
+
 # Install Rust using rustup
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain stable \
-    && /root/.cargo/bin/rustup target add aarch64-unknown-linux-gnu armv7-unknown-linux-gnueabihf
+    && /root/.cargo/bin/rustup target add aarch64-unknown-linux-gnu armv7-unknown-linux-gnueabihf \
+    && /root/.cargo/bin/cargo install --locked cargo-local-registry
 ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Default workdir
