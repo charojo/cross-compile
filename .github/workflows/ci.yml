@@ -28,5 +28,5 @@ jobs:
         run: |
           make build
           test -f build/cpp-service/libsensor_service.so
-     - name: Test
+      - name: Test
         run: make test
