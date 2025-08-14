@@ -1,4 +1,4 @@
-import ctypes  # for loading the shared library via ctypes.CDLL
+import ctypes
 import pathlib
 import sqlite3
 
