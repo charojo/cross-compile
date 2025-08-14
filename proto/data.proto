@@ -10,3 +10,19 @@ message UpdateUserResponse {
   bool success = 1;
   string message = 2;
 }
+
+message GetUserRequest {
+  int32 user_id = 1;
+  string field = 2;
+}
+
+message GetUserResponse {
+  bool found = 1;
+  string value = 2;
+}
+
+message UpdateUserEvent {
+  int32 user_id = 1;
+  string field = 2;
+  string value = 3;
+}
