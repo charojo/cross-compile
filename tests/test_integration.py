@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
+import threading
+import time
 import contextlib
 import pathlib
 import subprocess
-import threading
-import time
 
 import zmq
 
