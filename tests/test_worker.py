@@ -34,11 +34,13 @@ def test_process_parses_event_and_sends_request():
     result = worker.process(poller, sub_socket, req_socket)
 
     assert result.user_id == 7
+    assert result.field == "name"
     req_socket.send.assert_called_once()
     sent = req_socket.send.call_args[0][0]
     req = data_pb2.GetUserRequest()
     req.ParseFromString(sent)
     assert req.user_id == 7
+    assert req.field == "name"
 
 
 def test_sensor_reading_pub_sub_roundtrip():

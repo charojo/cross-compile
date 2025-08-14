@@ -6,33 +6,32 @@ from google.protobuf.internal import builder as _builder
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import symbol_database as _symbol_database
-
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
-    b'\n\ndata.proto"!\n\x0eGetUserRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\x05"T\n\x11UpdateUserRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\x05\x12\r\n\x05\x66ield\x18\x02 \x01(\t\x12\r\n\x05value\x18\x03 \x01(\t\x12\x10\n\x08trace_id\x18\x04 \x01(\x04"H\n\x12UpdateUserResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x10\n\x08trace_id\x18\x03 \x01(\x04"f\n\x0fUpdateUserEvent\x12\x0f\n\x07user_id\x18\x01 \x01(\x05\x12\r\n\x05\x66ield\x18\x02 \x01(\t\x12\x11\n\told_value\x18\x03 \x01(\t\x12\x11\n\tnew_value\x18\x04 \x01(\t\x12\r\n\x05value\x18\x05 \x01(\t"L\n\x0fGetUserResponse\x12\r\n\x05\x66ound\x18\x01 \x01(\x08\x12\x0f\n\x07user_id\x18\x02 \x01(\x05\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x0b\n\x03\x61ge\x18\x04 \x01(\x05"D\n\rSensorReading\x12\x11\n\tsensor_id\x18\x01 \x01(\x05\x12\r\n\x05value\x18\x02 \x01(\x01\x12\x11\n\ttimestamp\x18\x03 \x01(\x03"C\n\x0e\x43ontrolCommand\x12\x10\n\x08new_rate\x18\x01 \x01(\x04\x12\x0e\n\x06target\x18\x02 \x01(\t\x12\x0f\n\x07\x63ommand\x18\x03 \x01(\tb\x06proto3'
-)
+
+
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\ndata.proto\"0\n\x0eGetUserRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\x05\x12\r\n\x05\x66ield\x18\x02 \x01(\t\"T\n\x11UpdateUserRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\x05\x12\r\n\x05\x66ield\x18\x02 \x01(\t\x12\r\n\x05value\x18\x03 \x01(\t\x12\x10\n\x08trace_id\x18\x04 \x01(\x04\"H\n\x12UpdateUserResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x10\n\x08trace_id\x18\x03 \x01(\x04\"f\n\x0fUpdateUserEvent\x12\x0f\n\x07user_id\x18\x01 \x01(\x05\x12\r\n\x05\x66ield\x18\x02 \x01(\t\x12\x11\n\told_value\x18\x03 \x01(\t\x12\x11\n\tnew_value\x18\x04 \x01(\t\x12\r\n\x05value\x18\x05 \x01(\t\"[\n\x0fGetUserResponse\x12\r\n\x05\x66ound\x18\x01 \x01(\x08\x12\x0f\n\x07user_id\x18\x02 \x01(\x05\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x0b\n\x03\x61ge\x18\x04 \x01(\x05\x12\r\n\x05value\x18\x05 \x01(\t\"D\n\rSensorReading\x12\x11\n\tsensor_id\x18\x01 \x01(\x05\x12\r\n\x05value\x18\x02 \x01(\x01\x12\x11\n\ttimestamp\x18\x03 \x01(\x03\"C\n\x0e\x43ontrolCommand\x12\x10\n\x08new_rate\x18\x01 \x01(\x04\x12\x0e\n\x06target\x18\x02 \x01(\t\x12\x0f\n\x07\x63ommand\x18\x03 \x01(\tb\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
-_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, "data_pb2", globals())
+_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'data_pb2', globals())
 if _descriptor._USE_C_DESCRIPTORS == False:
 
-    DESCRIPTOR._options = None
-    _GETUSERREQUEST._serialized_start = 14
-    _GETUSERREQUEST._serialized_end = 47
-    _UPDATEUSERREQUEST._serialized_start = 49
-    _UPDATEUSERREQUEST._serialized_end = 133
-    _UPDATEUSERRESPONSE._serialized_start = 135
-    _UPDATEUSERRESPONSE._serialized_end = 207
-    _UPDATEUSEREVENT._serialized_start = 209
-    _UPDATEUSEREVENT._serialized_end = 311
-    _GETUSERRESPONSE._serialized_start = 313
-    _GETUSERRESPONSE._serialized_end = 389
-    _SENSORREADING._serialized_start = 391
-    _SENSORREADING._serialized_end = 459
-    _CONTROLCOMMAND._serialized_start = 461
-    _CONTROLCOMMAND._serialized_end = 528
+  DESCRIPTOR._options = None
+  _GETUSERREQUEST._serialized_start=14
+  _GETUSERREQUEST._serialized_end=62
+  _UPDATEUSERREQUEST._serialized_start=64
+  _UPDATEUSERREQUEST._serialized_end=148
+  _UPDATEUSERRESPONSE._serialized_start=150
+  _UPDATEUSERRESPONSE._serialized_end=222
+  _UPDATEUSEREVENT._serialized_start=224
+  _UPDATEUSEREVENT._serialized_end=326
+  _GETUSERRESPONSE._serialized_start=328
+  _GETUSERRESPONSE._serialized_end=419
+  _SENSORREADING._serialized_start=421
+  _SENSORREADING._serialized_end=489
+  _CONTROLCOMMAND._serialized_start=491
+  _CONTROLCOMMAND._serialized_end=558
 # @@protoc_insertion_point(module_scope)
