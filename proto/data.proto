@@ -16,6 +16,7 @@ message UpdateUserEvent {
   string field = 2;
   string old_value = 3;
   string new_value = 4;
+  string value = 5;
 }
 
 message GetUserRequest {
@@ -23,9 +24,10 @@ message GetUserRequest {
 }
 
 message GetUserResponse {
-  int32 user_id = 1;
-  string name = 2;
-  int32 age = 3;
+  bool found = 1;
+  int32 user_id = 2;
+  string name = 3;
+  int32 age = 4;
 }
 
 message SensorData {
