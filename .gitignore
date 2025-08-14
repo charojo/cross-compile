@@ -1,0 +1,3 @@
+cpp-service/data_service
+python-worker/__pycache__
+rust-agent/target
