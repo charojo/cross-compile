@@ -15,7 +15,7 @@ class DataServiceStub(threading.Thread):
 
     def __init__(self):
         super().__init__()
-        self._stop = threading.Event()
+        self._stop_event = threading.Event()
         self.received_get_requests = []
         self.context = zmq.Context()
         self.rep = self.context.socket(zmq.REP)
@@ -26,7 +26,7 @@ class DataServiceStub(threading.Thread):
     def run(self):
         poller = zmq.Poller()
         poller.register(self.rep, zmq.POLLIN)
-        while not self._stop.is_set():
+        while not self._stop_event.is_set():
             socks = dict(poller.poll(100))
             if self.rep in socks:
                 mtype, msg = self.rep.recv_multipart()
@@ -57,7 +57,7 @@ class DataServiceStub(threading.Thread):
                     pass
 
     def stop(self):
-        self._stop.set()
+        self._stop_event.set()
         self.join()
         self.rep.close(0)
         self.pub.close(0)
