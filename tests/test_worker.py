@@ -1,0 +1,43 @@
+import sys
+import pathlib
+from unittest.mock import MagicMock
+
+# Ensure repository root is on path for proto package
+sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
+from proto import data_pb2
+
+def load_worker_with_mocked_zmq():
+    zmq_mock = MagicMock()
+    sub_socket = MagicMock()
+    req_socket = MagicMock()
+    ctx = MagicMock()
+    ctx.socket.side_effect = [sub_socket, req_socket]
+    zmq_mock.Context.return_value = ctx
+    zmq_mock.SUB = 1
+    zmq_mock.REQ = 2
+    zmq_mock.POLLIN = 1
+    zmq_mock.SUBSCRIBE = 1
+    poller = MagicMock()
+    poller.poll.return_value = [(sub_socket, zmq_mock.POLLIN)]
+    zmq_mock.Poller.return_value = poller
+
+    sys.modules['zmq'] = zmq_mock
+
+    sys.path.append(str(pathlib.Path(__file__).resolve().parents[1] / "python-worker"))
+    import worker  # noqa: E402  (import after sys.path manipulation)
+    return worker, poller, sub_socket, req_socket
+
+
+def test_process_parses_event_and_sends_request():
+    worker, poller, sub_socket, req_socket = load_worker_with_mocked_zmq()
+    event = data_pb2.UpdateUserEvent(user_id=7, field="name", value="Bob")
+    sub_socket.recv.return_value = event.SerializeToString()
+
+    result = worker.process(poller, sub_socket, req_socket)
+
+    assert result.user_id == 7
+    req_socket.send.assert_called_once()
+    sent = req_socket.send.call_args[0][0]
+    req = data_pb2.GetUserRequest()
+    req.ParseFromString(sent)
+    assert req.user_id == 7
