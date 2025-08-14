@@ -58,3 +58,17 @@ def test_sensor_reading_pub_sub_roundtrip():
     worker.send_sensor_reading(pub_socket, reading)
     received = worker.recv_sensor_reading(sub_socket)
     assert received == reading
+
+
+def test_main_emits_startup_message(capsys):
+    worker, poller, sub_socket, req_socket = load_worker_with_mocked_zmq()
+    with (
+        patch("worker.setup", return_value=(poller, sub_socket, req_socket)),
+        patch("worker.process", side_effect=SystemExit),
+    ):
+        try:
+            worker.main()
+        except SystemExit:
+            pass
+    captured = capsys.readouterr()
+    assert "Python worker active" in captured.out
