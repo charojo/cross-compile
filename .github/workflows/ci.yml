@@ -25,6 +25,8 @@ jobs:
       - name: Pre-commit
         run: pre-commit run --all-files
       - name: Build
-        run: make build
+        run: |
+          make build
+          test -f build/cpp-service/libsensor_service.so
       - name: Test
         run: make test
