@@ -11,18 +11,31 @@ message UpdateUserResponse {
   string message = 2;
 }
 
-message GetUserRequest {
+message UpdateUserEvent {
   int32 user_id = 1;
   string field = 2;
+  string old_value = 3;
+  string new_value = 4;
+  string value = 5;
+}
+
+message GetUserRequest {
+  int32 user_id = 1;
 }
 
 message GetUserResponse {
   bool found = 1;
-  string value = 2;
+  int32 user_id = 2;
+  string name = 3;
+  int32 age = 4;
 }
 
-message UpdateUserEvent {
-  int32 user_id = 1;
-  string field = 2;
-  string value = 3;
+message SensorData {
+  string sensor_id = 1;
+  double value = 2;
+}
+
+message ControlCommand {
+  string target = 1;
+  string command = 2;
 }
