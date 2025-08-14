@@ -12,7 +12,11 @@
 namespace {
 std::atomic<bool> running{true};
 
-void handle_signal(int) { running = false; }
+void handle_signal(int signum) {
+  std::cout << "Signal " << signum << " received, initiating shutdown"
+            << std::endl;
+  running = false;
+}
 
 bool read_varint(const uint8_t *&data, const uint8_t *end, uint64_t &out) {
   out = 0;
