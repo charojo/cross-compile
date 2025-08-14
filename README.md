@@ -2,7 +2,13 @@
 
 Embedded Cross-Platform Dev Workspace (i.MX8MP Cortex-A53)
 
-## Conclusion 
+## Contributing
+
+Before making changes, please read [AGENTS.md](AGENTS.md) for code style,
+commit message conventions, required tests, and expectations around keeping
+`plan.md` and `tracking.md` up to date.
+
+## Conclusion
 
 This VS Code + DevContainer scaffold is designed to enable a team to quickly start developing cross-platform (C++/Python/Rust) services for the i.MX8MP while ensuring alignment with the **Option A architecture** recommendations (ZeroMQ messaging, Protobuf schemas, SQLite persistence, etc.). It provides a comprehensive environment where everything from writing code, building, running on an emulated target, debugging, benchmarking, and testing is streamlined and reproducible.
 
