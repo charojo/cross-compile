@@ -1,6 +1,6 @@
-import zmq
 import time
 
+import zmq
 from proto import data_pb2
 from python_worker.worker import (
     recv_sensor_reading,
