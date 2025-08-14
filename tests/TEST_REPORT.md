@@ -1,4 +1,5 @@
 # Test Report
+This document summarizes the latest `make test` run for each merged feature. Include the abbreviated commit ID and a link to the relevant pull request or commit for traceability.
 
 ## Command
 `make test` run on 2025-08-14.
@@ -28,3 +29,8 @@ Tests failed: Could NOT find Protobuf (missing: Protobuf_LIBRARIES Protobuf_INCL
 - Python worker example - `97dc3be` ([commit](https://github.com/example/commit/97dc3be))
 - Rust agent template - _pending_
 - Sensor reading storage and command handling - `626feab` ([commit](https://github.com/example/commit/626feab))
+
+## b2458e5
+- **Commit**: [`b2458e5`](../../commit/b2458e5) (PR #25: split build into subtargets for languages)
+- **Date**: 2025-08-14
+- **Result**: `make test` failed – Could NOT find Protobuf (missing: Protobuf_LIBRARIES Protobuf_INCLUDE_DIR)

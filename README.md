@@ -31,6 +31,7 @@ Moving forward, this scaffold can be extended with more services or tools as nee
 
 The overall roadmap and milestone breakdown live in [project/plan.md](project/plan.md).
 Current feature status and links to issues or pull requests are tracked in [project/tracking.md](project/tracking.md).
+Testing objectives are outlined in [project/test_plan.md](project/test_plan.md).
 
 ## Architecture and Technology Stack Overview
 
