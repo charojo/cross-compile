@@ -2,5 +2,11 @@
 name = "rust-agent"
 version = "0.1.0"
 edition = "2024"
+build = "build.rs"
 
 [dependencies]
+prost = "0.12"
+zmq = "0.10"
+
+[build-dependencies]
+prost-build = "0.12"

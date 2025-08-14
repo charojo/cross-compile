@@ -10,7 +10,15 @@ build:
 	cargo build --target=aarch64-unknown-linux-gnu --manifest-path rust-agent/Cargo.toml
 	python -m py_compile python-worker/*.py
 
+  ./scripts/gen-protos.sh && g++ -std=c++17 cpp-service/DataService.cpp -o cpp-service/data_service && cargo build --manifest-path rust-agent/Cargo.toml && python -m py_compile python-worker/worker.py
+
 test:
 	ctest --test-dir $(CPP_BUILD_DIR)
 	cargo test --target=aarch64-unknown-linux-gnu --manifest-path rust-agent/Cargo.toml
 	pytest || [ $$? -eq 5 ]
+
+  ./scripts/gen-protos.sh && cargo test --manifest-path rust-agent/Cargo.toml && python -m py_compile python-worker/worker.py
+	cmake -S cpp-service -B build/cpp-service
+	cmake --build build/cpp-service
+	cargo test --manifest-path rust-agent/Cargo.toml
+	python -m py_compile python-worker/worker.py
