@@ -14,6 +14,7 @@
 ## Tests
 - Run `make test` before pushing changes. All tests must pass.
 - Docs-only changes must still run `make test` to confirm nothing breaks.
+- Refresh `tests/TEST_REPORT.md` with the latest `make test` output on every merged change.
 
 ## Project Documentation
 - Update `plan.md` when the feature roadmap changes or new features are added.
