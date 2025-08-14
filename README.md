@@ -6,7 +6,10 @@ Embedded Cross-Platform Dev Workspace (i.MX8MP Cortex-A53)
 
 Before making changes, please read [AGENTS.md](AGENTS.md) for code style,
 commit message conventions, required tests, and expectations around keeping
-`plan.md` and `tracking.md` up to date.
+`plan.md` and `tracking.md` up to date. Service-specific instructions live in
+[cpp-service/AGENTS.md](cpp-service/AGENTS.md),
+[python-worker/AGENTS.md](python-worker/AGENTS.md), and
+[rust-agent/AGENTS.md](rust-agent/AGENTS.md).
 
 ## Continuous Integration
 
