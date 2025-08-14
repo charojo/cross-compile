@@ -1,0 +1,4 @@
+# Lock file generated manually due to restricted environment
+pyzmq==25.1.1
+protobuf==5.27.2
+pytest==8.2.1

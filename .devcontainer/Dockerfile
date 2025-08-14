@@ -9,7 +9,7 @@ RUN dpkg --add-architecture arm64 && dpkg --add-architecture armhf && \
     gcc-aarch64-linux-gnu g++-aarch64-linux-gnu \
     gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf \
     qemu-user-static \
-    libzmq3-dev \
+    zeromq libzmq3-dev \
     sqlite3 libsqlite3-dev \
     protobuf-compiler libprotobuf-dev \
     libprotobuf-dev:arm64 libprotobuf-dev:armhf \
@@ -19,7 +19,7 @@ RUN dpkg --add-architecture arm64 && dpkg --add-architecture armhf && \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python packages required for workers
-RUN pip3 install --no-cache-dir pyzmq protobuf
+RUN pip3 install --no-cache-dir pyzmq protobuf pytest
 
 # Install Rust using rustup
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain stable \

@@ -8,4 +8,4 @@ linker = "aarch64-linux-gnu-gcc"
 replace-with = "local-registry"
 
 [source.local-registry]
-local-registry = "/workspace/.cargo/local-registry"
+local-registry = ".cargo/local-registry"
