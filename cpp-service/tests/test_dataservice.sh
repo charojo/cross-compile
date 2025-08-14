@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 set -e
-./cpp-service/data_service | grep "Data Service running"
+timeout 1 ./cpp-service/data_service | grep -m 1 "Data Service running"
