@@ -4,7 +4,7 @@ import zmq
 
 from google.protobuf.message import DecodeError
 from proto import data_pb2
-import worker
+from python_worker import worker
 
 
 class DataServiceStub(threading.Thread):
