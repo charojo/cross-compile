@@ -8,6 +8,14 @@ Before making changes, please read [AGENTS.md](AGENTS.md) for code style,
 commit message conventions, required tests, and expectations around keeping
 `plan.md` and `tracking.md` up to date.
 
+## Continuous Integration
+
+All pull requests run `make test` via GitHub Actions. The workflow
+configuration lives in [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
+and sets up the toolchain inside a container before executing the tests.
+Contributors should run `make test` locally and ensure the CI workflow passes
+before opening or updating a pull request.
+
 ## Conclusion
 
 This VS Code + DevContainer scaffold is designed to enable a team to quickly start developing cross-platform (C++/Python/Rust) services for the i.MX8MP while ensuring alignment with the **Option A architecture** recommendations (ZeroMQ messaging, Protobuf schemas, SQLite persistence, etc.). It provides a comprehensive environment where everything from writing code, building, running on an emulated target, debugging, benchmarking, and testing is streamlined and reproducible.
