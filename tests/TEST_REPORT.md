@@ -2,7 +2,7 @@
 This document summarizes the latest `make test` run for each merged feature. Include the abbreviated commit ID and a link to the relevant pull request or commit for traceability.
 
 ## Command
-`make test` run on 2025-08-14 at 20:40 UTC for commit 0f3b3fe.
+`make test` run on 2025-08-14 at 20:39 UTC for commit 25232ce.
 
 ## Output
 ```
@@ -18,7 +18,6 @@ CMake Error at /usr/share/cmake-3.28/Modules/FindPkgConfig.cmake:619 (message):
 Call Stack (most recent call first):
   /usr/share/cmake-3.28/Modules/FindPkgConfig.cmake:841 (_pkg_check_modules_internal)
   CMakeLists.txt:9 (pkg_check_modules)
-
 
 -- Configuring incomplete, errors occurred!
 make: *** [Makefile:13: test] Error 1
