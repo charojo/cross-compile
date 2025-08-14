@@ -38,7 +38,7 @@ def process(poller: zmq.Poller, sub_socket, req_socket):
         raw = sub_socket.recv()
         event = data_pb2.UpdateUserEvent()
         event.ParseFromString(raw)
-        request = data_pb2.GetUserRequest(user_id=event.user_id)
+        request = data_pb2.GetUserRequest(user_id=event.user_id, field=event.field)
         req_socket.send(request.SerializeToString())
         return event
     return None

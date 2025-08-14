@@ -52,6 +52,7 @@ int main() {
       GetUserRequest req;
       req.ParseFromArray(dataMsg.data(), dataMsg.size());
       GetUserResponse resp;
+      resp.set_user_id(req.user_id());
       std::string value = db.GetUser(req.user_id(), req.field());
       if (!value.empty()) {
         resp.set_found(true);
