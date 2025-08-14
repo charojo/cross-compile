@@ -13,13 +13,22 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Enable arm64 packages
+        run: |
+          sudo dpkg --add-architecture arm64
+          sudo tee /etc/apt/sources.list.d/arm64.list >/dev/null <<'EOF'
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports noble main universe multiverse restricted
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports noble-updates main universe multiverse restricted
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports noble-security main universe multiverse restricted
+          EOF
+          sudo apt-get update
       - name: Install dependencies
         run: |
-          apt-get update
-          apt-get install -y \
+          sudo apt-get install -y \
             curl cmake libprotobuf-dev protobuf-compiler \
             gcc-aarch64-linux-gnu g++-aarch64-linux-gnu python3-pip clang-format \
-            libzmq3-dev libzmq3-dev:arm64 libsqlite3-dev libsqlite3-dev:arm64 pkg-config \
+            libzmq3-dev libsqlite3-dev pkg-config \
+            libzmq3-dev:arm64 libsqlite3-dev:arm64 \
             qemu-user qemu-user-static qemu-system-aarch64
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
