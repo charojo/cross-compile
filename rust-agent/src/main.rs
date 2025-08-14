@@ -1,6 +1,6 @@
 use std::sync::{
     Arc,
-    atomic::{AtomicBool, AtomicU64, Ordering},
+    atomic::{AtomicBool, AtomicI32, AtomicU64, Ordering},
 };
 use std::thread;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
@@ -25,8 +25,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     subscriber.connect("tcp://localhost:5556")?;
     subscriber.set_subscribe(b"")?;
 
-    // Shared state for publish rate and shutdown signal.
+    // Shared state for publish rate, target sensor, and shutdown signal.
     let rate = Arc::new(AtomicU64::new(1));
+    let sensor_id = Arc::new(AtomicI32::new(1));
     let running = Arc::new(AtomicBool::new(true));
 
     // CTRL-C handler for clean shutdown.
@@ -40,6 +41,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Thread to receive control commands.
     let sub_handle = {
         let rate = rate.clone();
+        let sensor_id = sensor_id.clone();
         let running = running.clone();
         thread::spawn(move || {
             while running.load(Ordering::SeqCst) {
@@ -49,6 +51,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             if cmd.new_rate > 0 {
                                 rate.store(cmd.new_rate, Ordering::SeqCst);
                                 log::info!("Updated rate to {}s", cmd.new_rate);
+                            }
+                            if !cmd.target.is_empty() {
+                                if let Ok(id) = cmd.target.parse() {
+                                    sensor_id.store(id, Ordering::SeqCst);
+                                    log::info!("Updated sensor id to {}", id);
+                                }
+                            }
+                            if cmd.command == "shutdown" {
+                                running.store(false, Ordering::SeqCst);
                             }
                         }
                         Err(e) => log::error!("Decode ControlCommand: {e}"),
@@ -74,7 +85,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let ts = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs() as i64;
 
         let reading = SensorReading {
-            sensor_id: 1,
+            sensor_id: sensor_id.load(Ordering::SeqCst),
             value: 42.0,
             timestamp: ts,
         };
