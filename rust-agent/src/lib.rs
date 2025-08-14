@@ -103,9 +103,9 @@ mod tests {
         sub_socket.set_subscribe(b"").unwrap();
 
         let cmd = ControlCommand {
-            new_rate: 5,
             target: String::new(),
             command: String::new(),
+            new_rate: 5,
         };
         let mut buf = Vec::new();
         cmd.encode(&mut buf).unwrap();
