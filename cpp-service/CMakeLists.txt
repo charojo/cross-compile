@@ -13,10 +13,10 @@ add_library(sensor_service SHARED src/service.cpp generated/data.pb.cc)
 target_include_directories(sensor_service PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/generated)
 target_link_libraries(sensor_service PRIVATE sqlite3 protobuf::libprotobuf)
 
-add_executable(data_service DataService.cpp Cache.cpp Database.cpp)
-target_include_directories(data_service PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+add_executable(data_service DataService.cpp Cache.cpp Database.cpp generated/data.pb.cc)
+target_include_directories(data_service PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/generated)
 target_include_directories(data_service PRIVATE ${ZMQ_INCLUDE_DIRS})
-target_link_libraries(data_service PRIVATE sqlite3 ${ZMQ_LIBRARIES})
+target_link_libraries(data_service PRIVATE sqlite3 ${ZMQ_LIBRARIES} protobuf::libprotobuf)
 
 enable_testing()
 add_test(NAME data_service COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_dataservice.sh)

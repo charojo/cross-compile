@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\ndata.proto\"0\n\x0eGetUserRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\x05\x12\r\n\x05\x66ield\x18\x02 \x01(\t\"T\n\x11UpdateUserRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\x05\x12\r\n\x05\x66ield\x18\x02 \x01(\t\x12\r\n\x05value\x18\x03 \x01(\t\x12\x10\n\x08trace_id\x18\x04 \x01(\x04\"H\n\x12UpdateUserResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x10\n\x08trace_id\x18\x03 \x01(\x04\"f\n\x0fUpdateUserEvent\x12\x0f\n\x07user_id\x18\x01 \x01(\x05\x12\r\n\x05\x66ield\x18\x02 \x01(\t\x12\x11\n\told_value\x18\x03 \x01(\t\x12\x11\n\tnew_value\x18\x04 \x01(\t\x12\r\n\x05value\x18\x05 \x01(\t\"[\n\x0fGetUserResponse\x12\r\n\x05\x66ound\x18\x01 \x01(\x08\x12\r\n\x05value\x18\x02 \x01(\t\x12\x0f\n\x07user_id\x18\x03 \x01(\x05\x12\x0c\n\x04name\x18\x04 \x01(\t\x12\x0b\n\x03\x61ge\x18\x05 \x01(\x05\"D\n\rSensorReading\x12\x11\n\tsensor_id\x18\x01 \x01(\x05\x12\r\n\x05value\x18\x02 \x01(\x01\x12\x11\n\ttimestamp\x18\x03 \x01(\x03\"C\n\x0e\x43ontrolCommand\x12\x10\n\x08new_rate\x18\x01 \x01(\x04\x12\x0e\n\x06target\x18\x02 \x01(\t\x12\x0f\n\x07\x63ommand\x18\x03 \x01(\tb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\ndata.proto\"0\n\x0eGetUserRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\x05\x12\r\n\x05\x66ield\x18\x02 \x01(\t\"B\n\x11UpdateUserRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\x05\x12\r\n\x05\x66ield\x18\x02 \x01(\t\x12\r\n\x05value\x18\x03 \x01(\t\"6\n\x12UpdateUserResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"W\n\x0fUpdateUserEvent\x12\x0f\n\x07user_id\x18\x01 \x01(\x05\x12\r\n\x05\x66ield\x18\x02 \x01(\t\x12\x11\n\told_value\x18\x03 \x01(\t\x12\x11\n\tnew_value\x18\x04 \x01(\t\"/\n\x0fGetUserResponse\x12\r\n\x05\x66ound\x18\x01 \x01(\x08\x12\r\n\x05value\x18\x02 \x01(\t\"D\n\rSensorReading\x12\x11\n\tsensor_id\x18\x01 \x01(\x05\x12\r\n\x05value\x18\x02 \x01(\x01\x12\x11\n\ttimestamp\x18\x03 \x01(\x03\"C\n\x0e\x43ontrolCommand\x12\x10\n\x08new_rate\x18\x01 \x01(\x04\x12\x0e\n\x06target\x18\x02 \x01(\t\x12\x0f\n\x07\x63ommand\x18\x03 \x01(\tb\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'data_pb2', globals())
@@ -23,15 +23,15 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _GETUSERREQUEST._serialized_start=14
   _GETUSERREQUEST._serialized_end=62
   _UPDATEUSERREQUEST._serialized_start=64
-  _UPDATEUSERREQUEST._serialized_end=148
-  _UPDATEUSERRESPONSE._serialized_start=150
-  _UPDATEUSERRESPONSE._serialized_end=222
-  _UPDATEUSEREVENT._serialized_start=224
-  _UPDATEUSEREVENT._serialized_end=326
-  _GETUSERRESPONSE._serialized_start=328
-  _GETUSERRESPONSE._serialized_end=419
-  _SENSORREADING._serialized_start=421
-  _SENSORREADING._serialized_end=489
-  _CONTROLCOMMAND._serialized_start=491
-  _CONTROLCOMMAND._serialized_end=558
+  _UPDATEUSERREQUEST._serialized_end=130
+  _UPDATEUSERRESPONSE._serialized_start=132
+  _UPDATEUSERRESPONSE._serialized_end=186
+  _UPDATEUSEREVENT._serialized_start=188
+  _UPDATEUSEREVENT._serialized_end=275
+  _GETUSERRESPONSE._serialized_start=277
+  _GETUSERRESPONSE._serialized_end=324
+  _SENSORREADING._serialized_start=326
+  _SENSORREADING._serialized_end=394
+  _CONTROLCOMMAND._serialized_start=396
+  _CONTROLCOMMAND._serialized_end=463
 # @@protoc_insertion_point(module_scope)
