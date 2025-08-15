@@ -17,12 +17,17 @@ jobs:
       - name: Enable arm64 packages
         run: |
           sudo dpkg --add-architecture arm64
+          sudo sed -i 's/^deb http/deb [arch=amd64] http/' /etc/apt/sources.list
           sudo tee /etc/apt/sources.list.d/arm64.list >/dev/null <<'EOF'
           deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports noble main universe multiverse restricted
           deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports noble-updates main universe multiverse restricted
           deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports noble-security main universe multiverse restricted
           EOF
-          sudo apt-get update
+          sudo rm -rf /var/lib/apt/lists/*
+          if ! sudo apt-get update -o Acquire::Retries=3; then
+            sudo sed -i 's@http://.*.ubuntu.com@http://azure.archive.ubuntu.com@' /etc/apt/sources.list
+            sudo apt-get update
+          fi
       - name: Install dependencies
         run: |
           sudo apt-get install -y \
