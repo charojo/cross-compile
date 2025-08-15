@@ -1,6 +1,7 @@
 name: CI
 
 on:
+  push:
   pull_request:
 
 jobs:
@@ -34,12 +35,35 @@ jobs:
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
           rustup target add aarch64-unknown-linux-gnu
           rustup component add clippy rustfmt
-          pip install pytest pre-commit pyzmq protobuf
+          pip install pytest pytest-cov pre-commit pyzmq protobuf behave
       - name: Pre-commit
         run: pre-commit run --all-files
       - name: Build
         run: |
           make build
           test -f build/cpp-service/libsensor_service.so
-      - name: Test
-        run: make test
+      - name: Unit tests
+        run: make test 2>&1 | tee tests/TEST_REPORT.md
+      - name: BDD scenarios
+        run: |
+          if [ -d features ]; then
+            behave
+          else
+            echo "No BDD features found"
+          fi
+      - name: Coverage
+        id: coverage
+        run: |
+          pytest tests --cov=python_worker --cov-report=xml
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: tests/TEST_REPORT.md
+      - name: Upload coverage report
+        if: always() && steps.coverage.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml

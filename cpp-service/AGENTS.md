@@ -27,8 +27,8 @@ See [../AGENTS.md](../AGENTS.md) for shared repository guidelines.
   This generates `build/cpp-service/libsensor_service.so`.
 
 ## Tests
-- Run the C++ tests via CTest:
-  
+- Run service tests with `pytest`:
+
   ```
-  ctest --test-dir build
+  pytest
   ```

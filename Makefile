@@ -17,3 +17,4 @@ test:
 > ctest --test-dir $(CPP_BUILD_DIR)
 > pytest || [ $$? -eq 5 ]
 > python -m py_compile python-worker/*.py
+
