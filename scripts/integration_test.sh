@@ -27,7 +27,7 @@ fi
 echo "data_service output: $(cat "$DATA_LOG")"
 
 # Launch Python worker
-PY_OUT=$(python python-worker/worker.py)
+PY_OUT=$(python -m worker)
 if ! echo "$PY_OUT" | grep -q "Python worker active"; then
     echo "Python worker output unexpected" >&2
     echo "$PY_OUT" >&2
