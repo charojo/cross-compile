@@ -22,7 +22,12 @@ jobs:
           deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports noble-updates main universe multiverse restricted
           deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports noble-security main universe multiverse restricted
           EOF
-          sudo apt-get update
+          sudo rm -rf /var/lib/apt/lists/*
+          if ! sudo apt-get update -o Acquire::Retries=3; then
+            sed -e 's@http://.*.ubuntu.com@http://azure.archive.ubuntu.com@' \
+                /etc/apt/sources.list | sudo tee /etc/apt/sources.list
+            sudo apt-get update
+          fi
       - name: Install dependencies
         run: |
           sudo apt-get install -y \
