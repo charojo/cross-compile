@@ -4,6 +4,10 @@ Embedded Cross-Platform Dev Workspace (i.MX8MP Cortex-A53)
 
 ## Contributing
 
+Run `make setup` once to install Git hooks. Use `make lint` for formatting and
+lint checks and `make test` for the test suite. The `scripts/pre-push.sh` hook
+runs both linting and tests before pushes.
+
 Before making changes, please read [AGENTS.md](AGENTS.md) for code style,
 commit message conventions, required tests, and expectations around keeping
 `plan.md` and `tracking.md` up to date. Service-specific instructions live in

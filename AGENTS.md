@@ -1,7 +1,8 @@
 # Contributor Guide
 
 ## Code Style
-- Run `pre-commit install` to enable automatic formatting checks.
+- Run `make setup` to install pre-commit and the pre-push hook.
+- Use `make lint` for formatting and linting checks.
 - Rust: run `cargo fmt --all` and `cargo clippy --all-targets --all-features`.
 - Python: format with `black` and lint with `flake8`.
 - C++: format with `clang-format` using the repository configuration.
@@ -14,6 +15,7 @@
 ## Tests
 - Run `make test` before pushing changes. All tests must pass.
 - Docs-only changes must still run `make test` to confirm nothing breaks.
+- The `scripts/pre-push.sh` hook runs `make lint` and `make test` automatically.
 - Refresh `tests/TEST_REPORT.md` with the latest `make test` output on every merged change.
 - Each subsystem keeps its test suite in a `tests/` directory using `pytest` or
   `pytest-bdd`.
