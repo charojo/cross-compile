@@ -1,6 +1,13 @@
 CPP_BUILD_DIR = build/cpp-service
 
-.PHONY: build proto cpp rust python test test-cpp test-rust test-python
+.PHONY: setup lint build proto cpp rust python test test-cpp test-rust test-python
+
+setup:
+	pre-commit install
+	ln -sf ../../scripts/pre-push.sh .git/hooks/pre-push
+
+lint:
+	pre-commit run --all-files
 
 build:
 	./scripts/gen-protos.sh
