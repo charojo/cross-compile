@@ -9,13 +9,11 @@ message UpdateUserRequest {
   int32 user_id = 1;
   string field = 2;
   string value = 3;
-  uint64 trace_id = 4;
 }
 
 message UpdateUserResponse {
   bool success = 1;
   string message = 2;
-  uint64 trace_id = 3;
 }
 
 message UpdateUserEvent {
@@ -23,15 +21,11 @@ message UpdateUserEvent {
   string field = 2;
   string old_value = 3;
   string new_value = 4;
-  string value = 5;
 }
 
 message GetUserResponse {
   bool found = 1;
   string value = 2;
-  int32 user_id = 3;
-  string name = 4;
-  int32 age = 5;
 }
 
 message SensorReading {
