@@ -22,8 +22,8 @@ See [../AGENTS.md](../AGENTS.md) for repository-wide rules.
   ```
 
 ## Tests
-- Run tests:
-  
+- Run agent tests with `pytest`:
+
   ```
-  cargo test --target=aarch64-unknown-linux-gnu
+  pytest
   ```

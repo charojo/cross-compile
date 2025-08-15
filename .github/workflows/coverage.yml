@@ -43,7 +43,8 @@ PY
       - name: Run Python tests with coverage
         run: |
           pip install pytest pytest-cov
-          pytest python-worker/tests --cov=python-worker --cov-fail-under=80
+          pip install .
+          pytest python-worker/tests --cov=worker --cov-fail-under=80
 
       - name: Run Rust tests with coverage
         working-directory: rust-agent
