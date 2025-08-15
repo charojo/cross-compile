@@ -1,10 +1,18 @@
 # Test Report
-This document summarizes the latest `make test` run for each merged feature. Include the abbreviated commit ID and a link to the relevant pull request or commit for traceability.
+This document summarizes the latest `make test` run for each merged feature. Include the abbreviated commit ID and a link to the
+relevant pull request or commit for traceability.
 
-## Command
-`make test` run on 2025-08-14 at 23:53 UTC for commit 0530771.
+## Table of Contents
+- [Run for commit 0530771 (2025-08-14 23:53 UTC)](#run-for-commit-0530771-2025-08-14-2353-utc)
 
-## Output
+## Summary
+| Commit ID | Timestamp (UTC) | Status |
+|-----------|-----------------|--------|
+| 0530771 | 2025-08-14 23:53 | Fail |
+
+---
+
+### Run for commit 0530771 (2025-08-14 23:53 UTC)
 ```
 ./scripts/gen-protos.sh
 cmake -S cpp-service -B build/cpp-service
@@ -19,3 +27,5 @@ cmake -S cpp-service -B build/cpp-service
 --   Package 'libzmq', required by 'virtual:world', not found
 -- Configuring incomplete, errors occurred!
 ```
+
+---
