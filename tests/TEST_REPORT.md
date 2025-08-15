@@ -1,19 +1,3 @@
-# Test Report
-This document summarizes the latest `make test` run for each merged feature. Include the abbreviated commit ID and a link to the
-relevant pull request or commit for traceability.
-
-## Table of Contents
-- [Run for commit 0530771 (2025-08-14 23:53 UTC)](#run-for-commit-0530771-2025-08-14-2353-utc)
-
-## Summary
-| Commit ID | Timestamp (UTC) | Status |
-|-----------|-----------------|--------|
-| 0530771 | 2025-08-14 23:53 | Fail |
-
----
-
-### Run for commit 0530771 (2025-08-14 23:53 UTC)
-```
 ./scripts/gen-protos.sh
 cmake -S cpp-service -B build/cpp-service
 -- The CXX compiler identification is GNU 13.3.0
@@ -22,10 +6,18 @@ cmake -S cpp-service -B build/cpp-service
 -- Check for working CXX compiler: /usr/bin/c++ - skipped
 -- Detecting CXX compile features
 -- Detecting CXX compile features - done
--- Found PkgConfig: /usr/bin/pkg-config (found version "1.8.1")
-- Checking for module 'libzmq'
+-- Found PkgConfig: /usr/bin/pkg-config (found version "1.8.1") 
+-- Checking for module 'libzmq'
 --   Package 'libzmq', required by 'virtual:world', not found
--- Configuring incomplete, errors occurred!
-```
+CMake Error at /usr/share/cmake-3.28/Modules/FindPkgConfig.cmake:619 (message):
+  The following required packages were not found:
 
----
+   - libzmq
+
+Call Stack (most recent call first):
+  /usr/share/cmake-3.28/Modules/FindPkgConfig.cmake:841 (_pkg_check_modules_internal)
+  CMakeLists.txt:9 (pkg_check_modules)
+
+
+-- Configuring incomplete, errors occurred!
+make: *** [Makefile:22: test] Error 1
