@@ -11,7 +11,7 @@ import subprocess
 import zmq
 
 from proto import data_pb2
-from python_worker import worker
+import worker
 
 
 @contextlib.contextmanager

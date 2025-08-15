@@ -9,11 +9,11 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["proto", "python_worker"]
+packages = ["proto", "worker"]
 
 [tool.setuptools.package-dir]
 proto = "proto"
-python_worker = "python-worker"
+worker = "python-worker"
 
 [tool.black]
 line-length = 88

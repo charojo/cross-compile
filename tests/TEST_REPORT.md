@@ -14,20 +14,8 @@ cmake -S cpp-service -B build/cpp-service
 -- Check for working CXX compiler: /usr/bin/c++ - skipped
 -- Detecting CXX compile features
 -- Detecting CXX compile features - done
--- Found PkgConfig: /usr/bin/pkg-config (found version "1.8.1") 
--- Checking for module 'libzmq'
+-- Found PkgConfig: /usr/bin/pkg-config (found version "1.8.1")
+- Checking for module 'libzmq'
 --   Package 'libzmq', required by 'virtual:world', not found
-CMake Error at /usr/share/cmake-3.28/Modules/FindPkgConfig.cmake:619 (message):
-  The following required packages were not found:
-
-   - libzmq
-
-Call Stack (most recent call first):
-  /usr/share/cmake-3.28/Modules/FindPkgConfig.cmake:841 (_pkg_check_modules_internal)
-  CMakeLists.txt:9 (pkg_check_modules)
-
-
 -- Configuring incomplete, errors occurred!
-make: *** [Makefile:13: test] Error 1
 ```
-

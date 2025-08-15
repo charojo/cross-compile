@@ -22,7 +22,7 @@ def load_worker_with_mocked_zmq():
     original_zmq = sys.modules.get("zmq")
     sys.modules["zmq"] = zmq_mock
 
-    from python_worker import worker
+    import worker
 
     if original_zmq is not None:
         sys.modules["zmq"] = original_zmq
@@ -57,7 +57,7 @@ def test_sensor_reading_pub_sub_roundtrip():
     import time
     import zmq
 
-    from python_worker import worker
+    import worker
 
     ctx = zmq.Context()
     pub_socket, sub_socket = worker.setup_sensor_pubsub(ctx, "inproc://sensor-test")
@@ -79,10 +79,10 @@ def test_main_emits_startup_message(capsys):
     worker, poller, sub_socket, req_socket = load_worker_with_mocked_zmq()
     with (
         patch(
-            "python_worker.worker.setup",
+            "worker.setup",
             return_value=(poller, sub_socket, req_socket),
         ),
-        patch("python_worker.worker.process", side_effect=SystemExit),
+        patch("worker.process", side_effect=SystemExit),
     ):
         try:
             worker.main()

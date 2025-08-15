@@ -2,11 +2,7 @@ import time
 
 import zmq
 from proto import data_pb2
-from python_worker.worker import (
-    recv_sensor_reading,
-    send_sensor_reading,
-    setup_sensor_pubsub,
-)
+from worker import recv_sensor_reading, send_sensor_reading, setup_sensor_pubsub
 
 
 def test_sensor_roundtrip():
