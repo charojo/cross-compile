@@ -17,3 +17,6 @@ add_executable(data_service DataService.cpp Cache.cpp Database.cpp generated/dat
 target_include_directories(data_service PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/generated)
 target_include_directories(data_service PRIVATE ${ZMQ_INCLUDE_DIRS})
 target_link_libraries(data_service PRIVATE sqlite3 ${ZMQ_LIBRARIES} protobuf::libprotobuf)
+
+enable_testing()
+add_test(NAME data_service COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_dataservice.sh)
